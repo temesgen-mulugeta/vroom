@@ -1,0 +1,58 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "start_index": 0,
+      "end_index": 0,
+      "capacity": [10]
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 25,
+        "location_index": 1,
+        "service": 60
+      },
+      "delivery": {
+        "id": 25,
+        "location_index": 2,
+        "service": 60
+      },
+      "amount": [1]
+    },
+    {
+      "pickup": {
+        "id": 26,
+        "location_index": 3,
+        "service": 60
+      },
+      "delivery": {
+        "id": 26,
+        "location_index": 4,
+        "service": 60
+      },
+      "amount": [1]
+    }
+  ],
+  "relations": [
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {"type": "shipment", "id": 25},
+        {"type": "shipment", "id": 26}
+      ]
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [0, 300, 600, 900, 1200],
+        [300, 0, 300, 600, 900],
+        [600, 300, 0, 300, 600],
+        [900, 600, 300, 0, 300],
+        [1200, 900, 600, 300, 0]
+      ]
+    }
+  }
+}

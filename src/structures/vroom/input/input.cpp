@@ -252,6 +252,38 @@ void Input::add_shipment(const Job& pickup, const Job& delivery) {
   _has_shipments = true;
 }
 
+void Input::add_relation(Relation&& relation) {
+  // Validate and resolve pickup IDs to job ranks
+  for (size_t i = 0; i < relation.steps.size(); ++i) {
+    const auto& step = relation.steps[i];
+
+    auto search = pickup_id_to_rank.find(step.id);
+    if (search == pickup_id_to_rank.end()) {
+      throw InputException(
+        std::format("Pickup {} in relation not found.", step.id));
+    }
+
+    Index pickup_rank = search->second;
+    Index delivery_rank = pickup_rank + 1;
+
+    // Check this shipment not already in another relation
+    if (job_rank_to_relation.contains(pickup_rank)) {
+      throw InputException(
+        std::format("Pickup {} already in another relation.", step.id));
+    }
+
+    relation.pickup_ranks.push_back(pickup_rank);
+    relation.delivery_ranks.push_back(delivery_rank);
+
+    size_t relation_idx = relations.size();
+    job_rank_to_relation[pickup_rank] = relation_idx;
+    job_rank_to_relation_position[pickup_rank] = i;
+    delivery_rank_to_relation[delivery_rank] = relation_idx;
+  }
+
+  relations.push_back(std::move(relation));
+}
+
 void Input::add_vehicle(const Vehicle& vehicle) {
   vehicles.push_back(vehicle);
 

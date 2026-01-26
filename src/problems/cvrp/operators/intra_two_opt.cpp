@@ -56,8 +56,20 @@ bool IntraTwoOpt::reversal_ok_for_shipments() const {
 
   while (valid && current < t_rank) {
     const auto& job = _input.jobs[s_route[current]];
+
+    // Check pickup-delivery constraint
     valid = (job.type != JOB_TYPE::PICKUP) ||
             (_sol_state.matching_delivery_rank[s_vehicle][current] > t_rank);
+
+    // Check relation constraint - don't reverse if job is in a relation
+    if (valid) {
+      if ((job.type == JOB_TYPE::PICKUP &&
+           _input.job_rank_to_relation.contains(s_route[current])) ||
+          (job.type == JOB_TYPE::DELIVERY && s_route[current] > 0 &&
+           _input.job_rank_to_relation.contains(s_route[current] - 1))) {
+        valid = false;
+      }
+    }
 
     ++current;
   }

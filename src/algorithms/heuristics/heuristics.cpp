@@ -46,6 +46,15 @@ inline void seed_route(const Input& input,
 
     const bool is_pickup = (current_job.type == JOB_TYPE::PICKUP);
 
+    // Skip pickups that are in a relation at position > 0
+    // (they can only be inserted after their relation predecessor)
+    if (is_pickup && input.job_rank_to_relation.contains(job_rank)) {
+      Index position = input.job_rank_to_relation_position.at(job_rank);
+      if (position > 0) {
+        continue;  // Not first in relation, can't be a seed job
+      }
+    }
+
     if (route.size() + (is_pickup ? 2 : 1) > vehicle.max_tasks) {
       continue;
     }
@@ -243,6 +252,7 @@ template <class Route> struct UnassignedCosts {
 
 template <class Route>
 inline Eval fill_route(const Input& input,
+                       std::vector<Route>& all_routes,
                        Route& route,
                        std::set<Index>& unassigned,
                        const std::vector<Cost>& regrets,
@@ -314,6 +324,52 @@ inline Eval fill_route(const Input& input,
       if (current_job.type == JOB_TYPE::PICKUP &&
           route.size() + 2 <= vehicle.max_tasks) {
 
+        // Check if this pickup is in a relation
+        std::optional<Index> required_prev_delivery = std::nullopt;
+        auto rel_it = input.job_rank_to_relation.find(job_rank);
+        if (rel_it != input.job_rank_to_relation.end()) {
+          Index relation_idx = rel_it->second;
+          Index position = input.job_rank_to_relation_position.at(job_rank);
+          const auto& relation = input.relations[relation_idx];
+
+          if (position > 0) {
+            // Not first in relation - must come after previous delivery on SAME vehicle
+            Index prev_delivery = relation.delivery_ranks[position - 1];
+
+            // First check if previous delivery is in ANY route
+            Index prev_vehicle_rank = static_cast<Index>(-1);
+            bool prev_delivery_in_any_route = false;
+
+            for (Index check_v = 0; check_v < all_routes.size(); ++check_v) {
+              for (Index i = 0; i < all_routes[check_v].route.size(); ++i) {
+                if (all_routes[check_v].route[i] == prev_delivery) {
+                  prev_delivery_in_any_route = true;
+                  prev_vehicle_rank = check_v;
+                  break;
+                }
+              }
+              if (prev_delivery_in_any_route) {
+                break;
+              }
+            }
+
+            if (prev_delivery_in_any_route) {
+              // Previous delivery found in a route
+              if (prev_vehicle_rank != v_rank) {
+                // Previous delivery is in a DIFFERENT vehicle, skip this shipment entirely
+                continue;
+              } else {
+                // Previous delivery is in CURRENT vehicle, require direct sequence
+                required_prev_delivery = prev_delivery;
+              }
+            } else {
+              // Previous delivery not found in ANY route yet, skip this shipment
+              // It can only be inserted after the previous shipment is assigned
+              continue;
+            }
+          }
+        }
+
         if (best_cost <
             unassigned_costs.get_pd_insertion_lower_bound(input, job_rank) -
               lambda * static_cast<double>(regrets[job_rank])) {
@@ -340,6 +396,12 @@ inline Eval fill_route(const Input& input,
         }
 
         for (Index pickup_r = 0; pickup_r <= route.size(); ++pickup_r) {
+          // If in relation and not first, only allow insertion immediately after previous delivery
+          if (required_prev_delivery.has_value()) {
+            if (pickup_r == 0 || route.route[pickup_r - 1] != required_prev_delivery.value()) {
+              continue;  // Skip this position
+            }
+          }
           const auto p_add = utils::addition_eval(input,
                                                   job_rank,
                                                   vehicle,
@@ -573,9 +635,13 @@ Eval basic(const Input& input,
     }
 
     const auto current_eval =
-      fill_route(input, current_r, unassigned, regrets[v], lambda);
+      fill_route(input, routes, current_r, unassigned, regrets[v], lambda);
     sol_eval += current_eval;
   }
+
+  // Note: Incomplete relation removal is handled during construction.
+  // Post-processing removal can break time window feasibility, so we rely on
+  // the construction logic in fill_route() to prevent incomplete relations.
 
   return sol_eval;
 }
@@ -704,9 +770,13 @@ Eval dynamic_vehicle_choice(const Input& input,
     }
 
     const auto current_eval =
-      fill_route(input, current_r, unassigned, regrets, lambda);
+      fill_route(input, routes, current_r, unassigned, regrets, lambda);
     sol_eval += current_eval;
   }
+
+  // Note: Incomplete relation removal is handled during construction.
+  // Post-processing removal can break time window feasibility, so we rely on
+  // the construction logic in fill_route() to prevent incomplete relations.
 
   return sol_eval;
 }

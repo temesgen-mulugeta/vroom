@@ -50,6 +50,21 @@ IntraRelocate::IntraRelocate(const Input& input,
 }
 
 void IntraRelocate::compute_gain() {
+  const auto& job = _input.jobs[s_route[s_rank]];
+
+  // Skip if job is a pickup or delivery in a relation
+  if (job.type == JOB_TYPE::PICKUP &&
+      _input.job_rank_to_relation.contains(s_route[s_rank])) {
+    gain_computed = true;
+    return;
+  }
+  if (job.type == JOB_TYPE::DELIVERY &&
+      s_route[s_rank] > 0 &&
+      _input.job_rank_to_relation.contains(s_route[s_rank] - 1)) {
+    gain_computed = true;
+    return;
+  }
+
   const auto& v_target = _input.vehicles[s_vehicle];
 
   // For removal, we consider the cost of removing job at rank s_rank,

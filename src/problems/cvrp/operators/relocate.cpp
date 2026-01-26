@@ -38,6 +38,20 @@ Relocate::Relocate(const Input& input,
 }
 
 void Relocate::compute_gain() {
+  const auto& job = _input.jobs[s_route[s_rank]];
+
+  // Skip if job is a pickup or delivery in a relation
+  if (job.type == JOB_TYPE::PICKUP &&
+      _input.job_rank_to_relation.contains(s_route[s_rank])) {
+    gain_computed = true;
+    return;
+  }
+  if (job.type == JOB_TYPE::DELIVERY &&
+      _input.delivery_rank_to_relation.contains(s_route[s_rank])) {
+    gain_computed = true;
+    return;
+  }
+
   // For source vehicle, we consider the cost of removing job at rank
   // s_rank, already stored.
   s_gain = _sol_state.node_gains[s_vehicle][s_rank];

@@ -68,6 +68,28 @@ CrossExchange::CrossExchange(const Input& input,
 }
 
 Eval CrossExchange::gain_upper_bound() {
+  // Skip if any job is in a relation
+  for (Index i = s_rank; i <= s_rank + 1; ++i) {
+    const auto& job = _input.jobs[s_route[i]];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(s_route[i])) ||
+        (job.type == JOB_TYPE::DELIVERY && s_route[i] > 0 &&
+         _input.job_rank_to_relation.contains(s_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+  }
+  for (Index i = t_rank; i <= t_rank + 1; ++i) {
+    const auto& job = _input.jobs[t_route[i]];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(t_route[i])) ||
+        (job.type == JOB_TYPE::DELIVERY && t_route[i] > 0 &&
+         _input.job_rank_to_relation.contains(t_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+  }
+
   std::tie(_normal_s_gain, _reversed_s_gain) =
     utils::addition_eval_delta(_input,
                                _sol_state,

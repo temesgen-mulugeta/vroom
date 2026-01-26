@@ -19,6 +19,7 @@ All rights reserved (see LICENSE).
 #include "structures/generic/matrix.h"
 #include "structures/typedefs.h"
 #include "structures/vroom/matrices.h"
+#include "structures/vroom/relation.h"
 #include "structures/vroom/solution/solution.h"
 #include "structures/vroom/vehicle.h"
 
@@ -135,6 +136,12 @@ public:
   // Store list of compatible vehicles for each job.
   std::vector<std::vector<Index>> compatible_vehicles_for_job;
 
+  // Store relations and lookup maps for quick access.
+  std::vector<Relation> relations;
+  std::unordered_map<Index, Index> job_rank_to_relation;           // pickup rank → relation index
+  std::unordered_map<Index, Index> job_rank_to_relation_position;  // pickup rank → position in relation
+  std::unordered_map<Index, Index> delivery_rank_to_relation;      // delivery rank → relation index
+
   Input(io::Servers servers = {},
         ROUTER router = ROUTER::OSRM,
         bool apply_TSPFix = false);
@@ -149,6 +156,8 @@ public:
   void add_job(const Job& job);
 
   void add_shipment(const Job& pickup, const Job& delivery);
+
+  void add_relation(Relation&& relation);
 
   void add_vehicle(const Vehicle& vehicle);
 

@@ -696,6 +696,52 @@ Route format_route(const Input& input,
 
 Solution format_solution(const Input& input, const TWSolution& tw_routes);
 
+// Check if a route violates relation constraints (in_direct_sequence).
+// Returns true if any relation constraint is violated.
+inline bool violates_relation_constraints(const Input& input,
+                                          const std::vector<Index>& new_route) {
+  // Build temporary map from job input rank to route position
+  std::unordered_map<Index, Index> job_input_rank_to_route_rank;
+  for (std::size_t i = 0; i < new_route.size(); ++i) {
+    job_input_rank_to_route_rank[new_route[i]] = i;
+  }
+
+  // For each job in the route, check if it's part of a relation
+  for (std::size_t i = 0; i < new_route.size(); ++i) {
+    Index job_rank = new_route[i];
+    const auto& job = input.jobs[job_rank];
+
+    // For pickups in relations, check if correctly sequenced
+    if (job.type == JOB_TYPE::PICKUP) {
+      auto rel_it = input.job_rank_to_relation.find(job_rank);
+      if (rel_it != input.job_rank_to_relation.end()) {
+        Index relation_idx = rel_it->second;
+        Index position = input.job_rank_to_relation_position.at(job_rank);
+        const auto& relation = input.relations[relation_idx];
+
+        // If not first in relation, must be immediately after previous delivery
+        if (position > 0) {
+          Index prev_delivery = relation.delivery_ranks[position - 1];
+          auto prev_delivery_it = job_input_rank_to_route_rank.find(prev_delivery);
+
+          if (prev_delivery_it == job_input_rank_to_route_rank.end()) {
+            // Previous delivery not in route - violation
+            return true;
+          }
+
+          Index prev_delivery_pos = prev_delivery_it->second;
+          if (static_cast<std::size_t>(prev_delivery_pos) + 1 != i) {
+            // Pickup not immediately after previous delivery - violation
+            return true;
+          }
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 } // namespace vroom::utils
 
 #endif

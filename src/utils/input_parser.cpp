@@ -181,6 +181,25 @@ inline void check_shipment(const rapidjson::Value& v) {
   }
 }
 
+inline void check_relation(const rapidjson::Value& v) {
+  if (!v.IsObject()) {
+    throw InputException("Invalid relation.");
+  }
+  if (!v.HasMember("type") || !v["type"].IsString()) {
+    throw InputException("Missing or invalid type for relation.");
+  }
+  if (std::string(v["type"].GetString()) != "in_direct_sequence") {
+    throw InputException(std::format("Unsupported relation type: {}",
+                                     v["type"].GetString()));
+  }
+  if (!v.HasMember("steps") || !v["steps"].IsArray()) {
+    throw InputException("Missing steps array for relation.");
+  }
+  if (v["steps"].Size() < 2) {
+    throw InputException("Relation must have at least 2 steps.");
+  }
+}
+
 inline void check_location(const rapidjson::Value& v,
                            const std::string& task_type) {
   if (!v.HasMember("location") || !v["location"].IsArray()) {
@@ -661,6 +680,39 @@ void parse(Input& input, const std::string& input_str, bool geometry) {
                                                "delivery"));
 
       input.add_shipment(pickup, delivery);
+    }
+  }
+
+  if (json_input.HasMember("relations")) {
+    if (!json_input["relations"].IsArray()) {
+      throw InputException("Invalid relations.");
+    }
+
+    for (rapidjson::SizeType i = 0; i < json_input["relations"].Size(); ++i) {
+      auto& json_relation = json_input["relations"][i];
+      check_relation(json_relation);
+
+      Relation relation(RELATION_TYPE::IN_DIRECT_SEQUENCE);
+
+      for (rapidjson::SizeType j = 0; j < json_relation["steps"].Size(); ++j) {
+        auto& json_step = json_relation["steps"][j];
+
+        if (!json_step.HasMember("type") || !json_step["type"].IsString()) {
+          throw InputException("Invalid step type in relation.");
+        }
+        if (std::string(json_step["type"].GetString()) != "shipment") {
+          throw InputException("Only shipment steps supported in relations.");
+        }
+        if (!json_step.HasMember("id") || !json_step["id"].IsUint64()) {
+          throw InputException("Missing or invalid id in relation step.");
+        }
+
+        RelationStep step(RelationStep::TYPE::SHIPMENT,
+                          json_step["id"].GetUint64());
+        relation.steps.push_back(step);
+      }
+
+      input.add_relation(std::move(relation));
     }
   }
 

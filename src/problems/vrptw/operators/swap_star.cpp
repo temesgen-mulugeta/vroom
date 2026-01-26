@@ -30,6 +30,28 @@ SwapStar::SwapStar(const Input& input,
 }
 
 void SwapStar::compute_gain() {
+  // Skip if any job in either route is part of a relation (moving breaks sequence)
+  for (const auto job_rank : s_route) {
+    const auto& job = _input.jobs[job_rank];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(job_rank)) ||
+        (job.type == JOB_TYPE::DELIVERY && job_rank > 0 &&
+         _input.job_rank_to_relation.contains(job_rank - 1))) {
+      gain_computed = true;
+      return;
+    }
+  }
+  for (const auto job_rank : t_route) {
+    const auto& job = _input.jobs[job_rank];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(job_rank)) ||
+        (job.type == JOB_TYPE::DELIVERY && job_rank > 0 &&
+         _input.job_rank_to_relation.contains(job_rank - 1))) {
+      gain_computed = true;
+      return;
+    }
+  }
+
   // Similar to cvrp::SwapStar::compute_gain but makes sure to trigger
   // ls::compute_best_swap_star_choice<TWRoute>.
   choice = ls::compute_best_swap_star_choice(_input,

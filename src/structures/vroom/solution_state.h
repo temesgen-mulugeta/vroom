@@ -94,6 +94,14 @@ public:
   std::vector<std::vector<Index>> matching_delivery_rank;
   std::vector<std::vector<Index>> matching_pickup_rank;
 
+  // relation_next_job[v][i] stores the job rank that must immediately
+  // follow job at rank i (if part of in_direct_sequence relation).
+  // relation_prev_job[v][i] stores the job rank that must immediately
+  // precede job at rank i (if part of in_direct_sequence relation).
+  // Value is std::nullopt if no constraint.
+  std::vector<std::vector<std::optional<Index>>> relation_next_job;
+  std::vector<std::vector<std::optional<Index>>> relation_prev_job;
+
   // cheapest_job_rank_in_routes_from[v1][v2][r1] stores the rank of
   // job in route v2 that minimize cost (as seen from the v2
   // perspective) from job at rank r1 in v1.
@@ -158,6 +166,8 @@ public:
   void set_pd_gains(const RawRoute& raw_route);
 
   void set_pd_matching_ranks(const RawRoute& raw_route);
+
+  void set_relation_constraints(const RawRoute& raw_route);
 
   void update_cheapest_job_rank_in_routes(const std::vector<Index>& route_1,
                                           const std::vector<Index>& route_2,

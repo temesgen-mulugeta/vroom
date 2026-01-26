@@ -6,7 +6,7 @@
 # Variables.
 CXX ?= g++
 USE_ROUTING ?= true
-CXXFLAGS = -MMD -MP -I. -std=c++20 -Wextra -Wpedantic -Wall -O3 -DASIO_STANDALONE -DUSE_ROUTING=$(USE_ROUTING)
+CXXFLAGS = -MMD -MP -I. -I/opt/homebrew/opt/asio/include -I/opt/homebrew/opt/openssl@3/include -std=c++20 -Wextra -Wpedantic -Wall -O3 -DASIO_STANDALONE -DUSE_ROUTING=$(USE_ROUTING)
 LDLIBS = -lpthread
 
 # Using all cpp files in current directory.
@@ -30,7 +30,7 @@ SRC = $(wildcard *.cpp)\
 ifeq ($(USE_ROUTING),false)
 	SRC := $(filter-out $(wildcard ./routing/*.cpp), $(SRC))
 else
-	LDLIBS += -lssl -lcrypto
+	LDLIBS += -L/opt/homebrew/opt/openssl@3/lib -lssl -lcrypto
 
 	# Checking for libosrm
 	ifeq ($(shell pkg-config --exists libosrm && echo 1),1)

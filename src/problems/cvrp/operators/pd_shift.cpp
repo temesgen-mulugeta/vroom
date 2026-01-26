@@ -52,6 +52,12 @@ PDShift::PDShift(const Input& input,
 }
 
 void PDShift::compute_gain() {
+  // Skip if shipment is part of a relation (moving breaks sequence)
+  if (_input.job_rank_to_relation.contains(s_route[_s_p_rank])) {
+    gain_computed = true;
+    return;
+  }
+
   if (const ls::RouteInsertion rs =
         ls::compute_best_insertion_pd(_input,
                                       _sol_state,

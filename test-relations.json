@@ -1,0 +1,47 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "start": [0, 0],
+      "end": [0, 0],
+      "capacity": [10]
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 25,
+        "location": [1, 1],
+        "service": 60
+      },
+      "delivery": {
+        "id": 25,
+        "location": [2, 2],
+        "service": 60
+      },
+      "amount": [1]
+    },
+    {
+      "pickup": {
+        "id": 26,
+        "location": [3, 3],
+        "service": 60
+      },
+      "delivery": {
+        "id": 26,
+        "location": [4, 4],
+        "service": 60
+      },
+      "amount": [1]
+    }
+  ],
+  "relations": [
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {"type": "shipment", "id": 25},
+        {"type": "shipment", "id": 26}
+      ]
+    }
+  ]
+}

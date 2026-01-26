@@ -69,6 +69,18 @@ IntraOrOpt::IntraOrOpt(const Input& input,
 }
 
 Eval IntraOrOpt::gain_upper_bound() {
+  // Skip if any job is in a relation
+  for (Index i = s_rank; i <= s_rank + 1; ++i) {
+    const auto& job = _input.jobs[s_route[i]];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(s_route[i])) ||
+        (job.type == JOB_TYPE::DELIVERY && s_route[i] > 0 &&
+         _input.job_rank_to_relation.contains(s_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+  }
+
   // For addition, consider the cost of adding source edge at new rank
   // *after* removal.
   const auto new_rank = t_rank + ((s_rank < t_rank) ? 2 : 0);

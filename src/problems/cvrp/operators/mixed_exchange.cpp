@@ -57,6 +57,27 @@ MixedExchange::MixedExchange(const Input& input,
 }
 
 Eval MixedExchange::gain_upper_bound() {
+  // Skip if any job is in a relation
+  const auto& s_job = _input.jobs[s_route[s_rank]];
+  if ((s_job.type == JOB_TYPE::PICKUP &&
+       _input.job_rank_to_relation.contains(s_route[s_rank])) ||
+      (s_job.type == JOB_TYPE::DELIVERY && s_route[s_rank] > 0 &&
+       _input.job_rank_to_relation.contains(s_route[s_rank] - 1))) {
+    _gain_upper_bound_computed = true;
+    return NO_EVAL;
+  }
+
+  for (Index i = t_rank; i <= t_rank + 1; ++i) {
+    const auto& t_job = _input.jobs[t_route[i]];
+    if ((t_job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(t_route[i])) ||
+        (t_job.type == JOB_TYPE::DELIVERY && t_route[i] > 0 &&
+         _input.job_rank_to_relation.contains(t_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+  }
+
   std::tie(_normal_s_gain, _reversed_s_gain) =
     utils::addition_eval_delta(_input,
                                _sol_state,

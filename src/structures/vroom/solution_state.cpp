@@ -34,6 +34,8 @@ SolutionState::SolutionState(const Input& input)
     pd_gains(_nb_vehicles),
     matching_delivery_rank(_nb_vehicles),
     matching_pickup_rank(_nb_vehicles),
+    relation_next_job(_nb_vehicles),
+    relation_prev_job(_nb_vehicles),
     cheapest_job_rank_in_routes_from(_nb_vehicles,
                                      std::vector<std::vector<Index>>(
                                        _nb_vehicles)),
@@ -55,6 +57,7 @@ void SolutionState::setup(const RawRoute& r) {
   set_node_gains(r);
   set_edge_gains(r);
   set_pd_matching_ranks(r);
+  set_relation_constraints(r);
   set_pd_gains(r);
   set_insertion_ranks(r);
   update_route_eval(r);
@@ -535,6 +538,61 @@ void SolutionState::set_pd_matching_ranks(const RawRoute& raw_route) {
 
     matching_delivery_rank[v][pickup_route_rank] = delivery_route_rank;
     matching_pickup_rank[v][delivery_route_rank] = pickup_route_rank;
+  }
+}
+
+void SolutionState::set_relation_constraints(const RawRoute& raw_route) {
+  const auto v = raw_route.v_rank;
+  const auto& route = raw_route.route;
+
+  relation_next_job[v] =
+    std::vector<std::optional<Index>>(route.size(), std::nullopt);
+  relation_prev_job[v] =
+    std::vector<std::optional<Index>>(route.size(), std::nullopt);
+
+  // Build map from job input rank to route position
+  std::unordered_map<Index, Index> job_input_rank_to_route_rank;
+  for (std::size_t i = 0; i < route.size(); ++i) {
+    job_input_rank_to_route_rank[route[i]] = i;
+  }
+
+  // For each job in the route, check if it's part of a relation
+  for (std::size_t i = 0; i < route.size(); ++i) {
+    Index job_rank = route[i];
+
+    // Check if this job is a pickup in a relation
+    auto rel_it = _input.job_rank_to_relation.find(job_rank);
+    if (rel_it == _input.job_rank_to_relation.end()) {
+      continue;  // Not in any relation
+    }
+
+    Index relation_idx = rel_it->second;
+    Index position = _input.job_rank_to_relation_position.at(job_rank);
+    const auto& relation = _input.relations[relation_idx];
+
+    // This is a pickup in a relation
+    Index delivery_rank = relation.delivery_ranks[position];
+
+    // Find delivery position in route
+    auto delivery_it = job_input_rank_to_route_rank.find(delivery_rank);
+    if (delivery_it == job_input_rank_to_route_rank.end()) {
+      continue;  // Delivery not in this route (shouldn't happen)
+    }
+
+    Index delivery_pos = delivery_it->second;
+
+    // If not last in relation, mark constraint
+    if (position + 1 < relation.pickup_ranks.size()) {
+      Index next_pickup = relation.pickup_ranks[position + 1];
+      relation_next_job[v][delivery_pos] = next_pickup;
+
+      // Find next pickup position in route
+      auto next_pickup_it = job_input_rank_to_route_rank.find(next_pickup);
+      if (next_pickup_it != job_input_rank_to_route_rank.end()) {
+        Index next_pickup_pos = next_pickup_it->second;
+        relation_prev_job[v][next_pickup_pos] = delivery_rank;
+      }
+    }
   }
 }
 

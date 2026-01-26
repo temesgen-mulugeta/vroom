@@ -30,6 +30,18 @@ RouteSplit::RouteSplit(const Input& input,
 }
 
 void RouteSplit::compute_gain() {
+  // Skip if any job in route is part of a relation (splitting would break sequence)
+  for (const auto job_rank : s_route) {
+    const auto& job = _input.jobs[job_rank];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(job_rank)) ||
+        (job.type == JOB_TYPE::DELIVERY && job_rank > 0 &&
+         _input.job_rank_to_relation.contains(job_rank - 1))) {
+      gain_computed = true;
+      return;
+    }
+  }
+
   // Similar to cvrp::RouteSplit::compute_gain but makes sure to
   // trigger ls::compute_best_route_split_choice<TWRoute>.
   choice = ls::compute_best_route_split_choice(_input,

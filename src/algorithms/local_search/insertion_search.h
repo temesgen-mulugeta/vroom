@@ -103,6 +103,23 @@ RouteInsertion compute_best_insertion_pd(const Input& input,
 
   result.eval = cost_threshold;
 
+  // Check if pickup is in a relation
+  bool pickup_in_relation = false;
+  std::optional<Index> required_prev_delivery = std::nullopt;
+
+  auto rel_it = input.job_rank_to_relation.find(j);
+  if (rel_it != input.job_rank_to_relation.end()) {
+    pickup_in_relation = true;
+    Index relation_idx = rel_it->second;
+    Index position = input.job_rank_to_relation_position.at(j);
+
+    if (position > 0) {
+      // Not first in relation, must be after previous delivery
+      const auto& relation = input.relations[relation_idx];
+      required_prev_delivery = relation.delivery_ranks[position - 1];
+    }
+  }
+
   // Pre-compute cost of addition for matching delivery.
   std::vector<Eval> d_adds(route.size() + 1);
   std::vector<unsigned char> valid_delivery_insertions(route.size() + 1, false);
@@ -131,6 +148,14 @@ RouteInsertion compute_best_insertion_pd(const Input& input,
   for (Index pickup_r = sol_state.insertion_ranks_begin[v][j];
        pickup_r < sol_state.insertion_ranks_end[v][j];
        ++pickup_r) {
+    // Check relation constraint
+    if (required_prev_delivery.has_value()) {
+      // Must insert immediately after required_prev_delivery
+      if (pickup_r == 0 || route.route[pickup_r - 1] != required_prev_delivery.value()) {
+        continue;  // Skip this position
+      }
+    }
+
     const Eval p_add =
       utils::addition_eval(input, j, v_target, route.route, pickup_r);
     if (result.eval < p_add) {
