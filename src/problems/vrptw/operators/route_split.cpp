@@ -40,6 +40,11 @@ void RouteSplit::compute_gain() {
       gain_computed = true;
       return;
     }
+    // Skip if job was in initial vehicle.steps (splitting would move to different vehicle)
+    if (_input.fixed_job_ranks.contains(job_rank)) {
+      gain_computed = true;
+      return;
+    }
   }
 
   // Similar to cvrp::RouteSplit::compute_gain but makes sure to

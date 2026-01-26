@@ -52,6 +52,12 @@ void Relocate::compute_gain() {
     return;
   }
 
+  // Skip if job was in initial vehicle.steps (cannot move to different vehicle)
+  if (_input.fixed_job_ranks.contains(s_route[s_rank])) {
+    gain_computed = true;
+    return;
+  }
+
   // For source vehicle, we consider the cost of removing job at rank
   // s_rank, already stored.
   s_gain = _sol_state.node_gains[s_vehicle][s_rank];

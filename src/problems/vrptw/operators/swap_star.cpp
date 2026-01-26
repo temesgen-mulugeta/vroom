@@ -40,6 +40,11 @@ void SwapStar::compute_gain() {
       gain_computed = true;
       return;
     }
+    // Skip if job was in initial vehicle.steps (cannot move to different vehicle)
+    if (_input.fixed_job_ranks.contains(job_rank)) {
+      gain_computed = true;
+      return;
+    }
   }
   for (const auto job_rank : t_route) {
     const auto& job = _input.jobs[job_rank];
@@ -47,6 +52,11 @@ void SwapStar::compute_gain() {
          _input.job_rank_to_relation.contains(job_rank)) ||
         (job.type == JOB_TYPE::DELIVERY && job_rank > 0 &&
          _input.job_rank_to_relation.contains(job_rank - 1))) {
+      gain_computed = true;
+      return;
+    }
+    // Skip if job was in initial vehicle.steps (cannot move to different vehicle)
+    if (_input.fixed_job_ranks.contains(job_rank)) {
       gain_computed = true;
       return;
     }

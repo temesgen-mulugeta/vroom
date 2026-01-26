@@ -2303,7 +2303,14 @@ void LocalSearch<Route,
     const auto& route_eval = _sol_state.route_evals[v];
 
     for (std::size_t r = 0; r < _sol[v].size(); ++r) {
-      const auto& current_job = _input.jobs[_sol[v].route[r]];
+      const auto job_rank = _sol[v].route[r];
+
+      // Skip if job was in initial vehicle.steps (cannot be removed from assigned vehicle)
+      if (_input.fixed_job_ranks.contains(job_rank)) {
+        continue;
+      }
+
+      const auto& current_job = _input.jobs[job_rank];
       if (current_job.type == JOB_TYPE::DELIVERY) {
         continue;
       }

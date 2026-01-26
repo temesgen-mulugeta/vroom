@@ -11,6 +11,7 @@ All rights reserved (see LICENSE).
 */
 
 #include <algorithm>
+#include <iostream>
 #include <mutex>
 #include <numeric>
 #include <ranges>
@@ -66,6 +67,17 @@ template <class Route> struct SolvingContext {
                          [this](const Index j) {
                            return !init_assigned.contains(j);
                          });
+
+    // DEBUG: Check if any fixed jobs ended up in unassigned
+    int fixed_in_unassigned = 0;
+    for (const auto j : unassigned) {
+      if (input.fixed_job_ranks.contains(j)) {
+        fixed_in_unassigned++;
+      }
+    }
+    if (fixed_in_unassigned > 0) {
+      std::cout << "WARNING: " << fixed_in_unassigned << " fixed jobs are in unassigned set!" << std::endl;
+    }
 
     // Heuristics will operate on all vehicles.
     std::iota(vehicles_ranks.begin(), vehicles_ranks.end(), 0);

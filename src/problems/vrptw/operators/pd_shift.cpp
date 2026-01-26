@@ -41,6 +41,12 @@ void PDShift::compute_gain() {
     return;
   }
 
+  // Skip if shipment was in initial vehicle.steps (cannot move to different vehicle)
+  if (_input.fixed_job_ranks.contains(s_route[_s_p_rank])) {
+    gain_computed = true;
+    return;
+  }
+
   // Check for valid removal wrt TW constraints.
   if (const auto delivery_between_pd =
         _tw_s_route.delivery_in_range(_s_p_rank + 1, _s_d_rank);

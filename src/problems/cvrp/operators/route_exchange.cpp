@@ -36,6 +36,20 @@ RouteExchange::RouteExchange(const Input& input,
 }
 
 void RouteExchange::compute_gain() {
+  // Skip if either route has fixed jobs (would move them to different vehicle)
+  for (Index i = 0; i < s_route.size(); ++i) {
+    if (_input.fixed_job_ranks.contains(s_route[i])) {
+      gain_computed = true;
+      return;
+    }
+  }
+  for (Index i = 0; i < t_route.size(); ++i) {
+    if (_input.fixed_job_ranks.contains(t_route[i])) {
+      gain_computed = true;
+      return;
+    }
+  }
+
   s_gain = t_route.empty()
              ? _sol_state.route_evals[s_vehicle]
              : std::get<0>(utils::addition_eval_delta(_input,

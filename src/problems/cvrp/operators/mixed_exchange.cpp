@@ -57,12 +57,17 @@ MixedExchange::MixedExchange(const Input& input,
 }
 
 Eval MixedExchange::gain_upper_bound() {
-  // Skip if any job is in a relation
+  // Skip if any job is in a relation or was in initial vehicle.steps
   const auto& s_job = _input.jobs[s_route[s_rank]];
   if ((s_job.type == JOB_TYPE::PICKUP &&
        _input.job_rank_to_relation.contains(s_route[s_rank])) ||
       (s_job.type == JOB_TYPE::DELIVERY && s_route[s_rank] > 0 &&
        _input.job_rank_to_relation.contains(s_route[s_rank] - 1))) {
+    _gain_upper_bound_computed = true;
+    return NO_EVAL;
+  }
+  // Skip if source job was in initial vehicle.steps
+  if (_input.fixed_job_ranks.contains(s_route[s_rank])) {
     _gain_upper_bound_computed = true;
     return NO_EVAL;
   }
@@ -73,6 +78,11 @@ Eval MixedExchange::gain_upper_bound() {
          _input.job_rank_to_relation.contains(t_route[i])) ||
         (t_job.type == JOB_TYPE::DELIVERY && t_route[i] > 0 &&
          _input.job_rank_to_relation.contains(t_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+    // Skip if target job was in initial vehicle.steps
+    if (_input.fixed_job_ranks.contains(t_route[i])) {
       _gain_upper_bound_computed = true;
       return NO_EVAL;
     }

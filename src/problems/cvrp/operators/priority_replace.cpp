@@ -91,6 +91,22 @@ void PriorityReplace::compute_gain() {
 }
 
 bool PriorityReplace::is_valid() {
+  // Skip if any job being replaced is fixed (was in vehicle.steps)
+  for (Index i = 0; i <= s_rank; ++i) {
+    if (_input.fixed_job_ranks.contains(s_route[i])) {
+      replace_start_valid = false;
+      replace_end_valid = false;
+      return false;
+    }
+  }
+  for (Index i = t_rank; i < s_route.size(); ++i) {
+    if (_input.fixed_job_ranks.contains(s_route[i])) {
+      replace_start_valid = false;
+      replace_end_valid = false;
+      return false;
+    }
+  }
+
   const auto& j = _input.jobs[_u];
 
   // Early abort if priority gain is not interesting anyway or the

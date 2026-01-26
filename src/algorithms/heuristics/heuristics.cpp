@@ -353,6 +353,15 @@ inline Eval fill_route(const Input& input,
         continue;
       }
 
+      // Skip if this job is fixed to a specific vehicle (from vehicle.steps)
+      // AND it's not the current vehicle
+      if (input.fixed_job_ranks.contains(job_rank)) {
+        if (input.fixed_job_to_vehicle.contains(job_rank) &&
+            input.fixed_job_to_vehicle.at(job_rank) != v_rank) {
+          continue;
+        }
+      }
+
       const auto& current_job = input.jobs[job_rank];
 
       if (current_job.type == JOB_TYPE::DELIVERY) {

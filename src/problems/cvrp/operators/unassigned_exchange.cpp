@@ -59,6 +59,12 @@ UnassignedExchange::UnassignedExchange(const Input& input,
 }
 
 void UnassignedExchange::compute_gain() {
+  // Skip if the job being removed is fixed (was in vehicle.steps)
+  if (_input.fixed_job_ranks.contains(_removed)) {
+    gain_computed = true;
+    return;
+  }
+
   if (t_rank == s_rank) {
     s_gain = utils::addition_eval_delta(_input,
                                         _sol_state,

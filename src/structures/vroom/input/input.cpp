@@ -8,6 +8,7 @@ All rights reserved (see LICENSE).
 */
 
 #include <algorithm>
+#include <iostream>
 #include <mutex>
 #include <semaphore>
 #include <thread>
@@ -981,6 +982,49 @@ void Input::set_vehicle_steps_ranks() {
       }
     }
   }
+
+  // Populate fixed job tracking and validate no job appears in multiple vehicles.
+  std::unordered_map<Index, Index> job_rank_to_initial_vehicle;
+
+  for (Index v = 0; v < vehicles.size(); ++v) {
+    for (const auto& step : vehicles[v].steps) {
+      if (step.type == STEP_TYPE::JOB) {
+        Index job_rank = step.rank;
+
+        // Check for duplicate job across vehicles
+        if (job_rank_to_initial_vehicle.contains(job_rank)) {
+          throw InputException(
+            std::format("Job {} appears in steps of multiple vehicles ({} and "
+                        "{}).",
+                        step.id,
+                        job_rank_to_initial_vehicle[job_rank],
+                        v));
+        }
+
+        job_rank_to_initial_vehicle[job_rank] = v;
+
+        // Mark job as fixed
+        fixed_job_ranks.insert(job_rank);
+        fixed_job_to_vehicle[job_rank] = v;
+
+        // If this is a pickup, also mark the corresponding delivery as fixed
+        // If this is a delivery, also mark the corresponding pickup as fixed
+        const auto& job = jobs[job_rank];
+        if (job.type == JOB_TYPE::PICKUP) {
+          Index delivery_rank = job_rank + 1;
+          fixed_job_ranks.insert(delivery_rank);
+          fixed_job_to_vehicle[delivery_rank] = v;
+        } else if (job.type == JOB_TYPE::DELIVERY && job_rank > 0) {
+          Index pickup_rank = job_rank - 1;
+          fixed_job_ranks.insert(pickup_rank);
+          fixed_job_to_vehicle[pickup_rank] = v;
+        }
+      }
+    }
+  }
+
+  // Debug: Print how many fixed jobs we have
+  std::cout << "DEBUG: Total fixed job ranks: " << fixed_job_ranks.size() << std::endl;
 }
 
 void Input::init_missing_matrices(const std::string& profile) {

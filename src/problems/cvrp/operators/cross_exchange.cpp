@@ -68,13 +68,18 @@ CrossExchange::CrossExchange(const Input& input,
 }
 
 Eval CrossExchange::gain_upper_bound() {
-  // Skip if any job is in a relation
+  // Skip if any job is in a relation or was in initial vehicle.steps
   for (Index i = s_rank; i <= s_rank + 1; ++i) {
     const auto& job = _input.jobs[s_route[i]];
     if ((job.type == JOB_TYPE::PICKUP &&
          _input.job_rank_to_relation.contains(s_route[i])) ||
         (job.type == JOB_TYPE::DELIVERY && s_route[i] > 0 &&
          _input.job_rank_to_relation.contains(s_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+    // Skip if job was in initial vehicle.steps
+    if (_input.fixed_job_ranks.contains(s_route[i])) {
       _gain_upper_bound_computed = true;
       return NO_EVAL;
     }
@@ -85,6 +90,11 @@ Eval CrossExchange::gain_upper_bound() {
          _input.job_rank_to_relation.contains(t_route[i])) ||
         (job.type == JOB_TYPE::DELIVERY && t_route[i] > 0 &&
          _input.job_rank_to_relation.contains(t_route[i] - 1))) {
+      _gain_upper_bound_computed = true;
+      return NO_EVAL;
+    }
+    // Skip if job was in initial vehicle.steps
+    if (_input.fixed_job_ranks.contains(t_route[i])) {
       _gain_upper_bound_computed = true;
       return NO_EVAL;
     }

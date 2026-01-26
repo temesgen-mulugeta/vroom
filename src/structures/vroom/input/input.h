@@ -142,6 +142,10 @@ public:
   std::unordered_map<Index, Index> job_rank_to_relation_position;  // pickup rank → position in relation
   std::unordered_map<Index, Index> delivery_rank_to_relation;      // delivery rank → relation index
 
+  // Track jobs that were in initial vehicle.steps (cannot be moved to different vehicles).
+  std::unordered_set<Index> fixed_job_ranks;              // Jobs from vehicle.steps
+  std::unordered_map<Index, Index> fixed_job_to_vehicle;  // Job rank → vehicle index
+
   Input(io::Servers servers = {},
         ROUTER router = ROUTER::OSRM,
         bool apply_TSPFix = false);

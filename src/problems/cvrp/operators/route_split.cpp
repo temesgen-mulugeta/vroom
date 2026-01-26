@@ -38,6 +38,22 @@ RouteSplit::RouteSplit(const Input& input,
 }
 
 void RouteSplit::compute_gain() {
+  // Skip if any job in route is in a relation or was in initial vehicle.steps
+  for (const auto job_rank : s_route) {
+    const auto& job = _input.jobs[job_rank];
+    if ((job.type == JOB_TYPE::PICKUP &&
+         _input.job_rank_to_relation.contains(job_rank)) ||
+        (job.type == JOB_TYPE::DELIVERY && job_rank > 0 &&
+         _input.job_rank_to_relation.contains(job_rank - 1))) {
+      gain_computed = true;
+      return;
+    }
+    if (_input.fixed_job_ranks.contains(job_rank)) {
+      gain_computed = true;
+      return;
+    }
+  }
+
   choice = ls::compute_best_route_split_choice(_input,
                                                _sol_state,
                                                s_vehicle,

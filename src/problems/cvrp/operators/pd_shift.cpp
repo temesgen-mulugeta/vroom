@@ -58,6 +58,12 @@ void PDShift::compute_gain() {
     return;
   }
 
+  // Skip if shipment was in initial vehicle.steps (cannot move to different vehicle)
+  if (_input.fixed_job_ranks.contains(s_route[_s_p_rank])) {
+    gain_computed = true;
+    return;
+  }
+
   if (const ls::RouteInsertion rs =
         ls::compute_best_insertion_pd(_input,
                                       _sol_state,
