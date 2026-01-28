@@ -8,7 +8,6 @@ All rights reserved (see LICENSE).
 */
 
 #include <algorithm>
-#include <iostream>
 #include <mutex>
 #include <semaphore>
 #include <thread>
@@ -1022,9 +1021,6 @@ void Input::set_vehicle_steps_ranks() {
       }
     }
   }
-
-  // Debug: Print how many fixed jobs we have
-  std::cout << "DEBUG: Total fixed job ranks: " << fixed_job_ranks.size() << std::endl;
 }
 
 void Input::init_missing_matrices(const std::string& profile) {

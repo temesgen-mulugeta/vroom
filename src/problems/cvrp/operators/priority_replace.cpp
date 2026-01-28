@@ -107,6 +107,56 @@ bool PriorityReplace::is_valid() {
     }
   }
 
+  // Check if replacing start portion would break relation sequences at boundary
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (s_rank + 1 < s_route.size() && required_next == s_route[s_rank + 1]) {
+        // Would break relation at boundary
+        replace_start_valid = false;
+      }
+    }
+  }
+
+  // Check if replacing end portion would break relation sequences at boundary
+  if (t_rank > 0 && _sol_state.relation_next_job[s_vehicle][t_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][t_rank - 1].value();
+    if (required_next == s_route[t_rank]) {
+      // Would break relation at boundary
+      replace_end_valid = false;
+    }
+  }
+
+  // Check if replacing would break shipment atomicity at boundaries
+  if (s_rank < s_route.size() - 1) {
+    const auto& boundary_job = _input.jobs[s_route[s_rank]];
+    const auto& next_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (boundary_job.type == JOB_TYPE::PICKUP &&
+        next_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank] + 1 == s_route[s_rank + 1]) {
+      replace_start_valid = false;
+    }
+  }
+
+  if (t_rank > 0 && t_rank < s_route.size()) {
+    const auto& prev_job = _input.jobs[s_route[t_rank - 1]];
+    const auto& boundary_job = _input.jobs[s_route[t_rank]];
+
+    if (prev_job.type == JOB_TYPE::PICKUP &&
+        boundary_job.type == JOB_TYPE::DELIVERY &&
+        s_route[t_rank - 1] + 1 == s_route[t_rank]) {
+      replace_end_valid = false;
+    }
+  }
+
+  // Early return if neither option is valid after constraint checks
+  if (!replace_start_valid && !replace_end_valid) {
+    return false;
+  }
+
   const auto& j = _input.jobs[_u];
 
   // Early abort if priority gain is not interesting anyway or the

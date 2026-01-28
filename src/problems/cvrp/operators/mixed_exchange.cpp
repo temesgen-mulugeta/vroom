@@ -147,6 +147,84 @@ void MixedExchange::compute_gain() {
 bool MixedExchange::is_valid() {
   assert(_gain_upper_bound_computed);
 
+  // Check if removal from source would break a relation sequence
+  if (s_rank > 0 && _sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+    if (required_next == s_route[s_rank]) {
+      return false;
+    }
+  }
+
+  // Check if removal from target would break a relation sequence
+  if (t_rank > 0) {
+    if (_sol_state.relation_next_job[t_vehicle][t_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[t_vehicle][t_rank - 1].value();
+      if (required_next == t_route[t_rank]) {
+        return false;
+      }
+    }
+  }
+
+  if (t_rank + 1 < t_route.size() - 1) {
+    if (_sol_state.relation_next_job[t_vehicle][t_rank + 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[t_vehicle][t_rank + 1].value();
+      if (t_rank + 2 < t_route.size() && required_next == t_route[t_rank + 2]) {
+        return false;
+      }
+    }
+  }
+
+  // Check if removal would break shipment atomicity in source
+  if (s_rank > 0 && s_rank < s_route.size() - 1) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 1]) {
+      return false;
+    }
+  }
+
+  // Check if removal would break shipment atomicity in target
+  if (t_rank > 0 && t_rank + 2 < t_route.size()) {
+    const auto& before_job = _input.jobs[t_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[t_route[t_rank + 2]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank - 1] + 1 == t_route[t_rank + 2]) {
+      return false;
+    }
+  }
+
+  // Check if insertion at target would break shipment atomicity
+  if (t_rank > 0 && t_rank < t_route.size()) {
+    const auto& before_job = _input.jobs[t_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[t_route[t_rank]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank - 1] + 1 == t_route[t_rank]) {
+      return false;
+    }
+  }
+
+  // Check if insertion at source would break shipment atomicity
+  if (s_rank > 0 && s_rank < s_route.size()) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank]) {
+      return false;
+    }
+  }
+
   bool valid =
     is_valid_for_target_range_bounds() &&
     target.is_valid_addition_for_capacity_margins(_input,

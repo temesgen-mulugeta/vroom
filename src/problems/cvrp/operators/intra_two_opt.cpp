@@ -78,6 +78,52 @@ bool IntraTwoOpt::reversal_ok_for_shipments() const {
 }
 
 bool IntraTwoOpt::is_valid() {
+  // Check if reversal would break relation sequences at boundaries
+  if (s_rank > 0 && _sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+    if (required_next == s_route[s_rank]) {
+      // Job at s_rank must follow previous job, can't reverse
+      return false;
+    }
+  }
+
+  if (t_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][t_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][t_rank].value();
+      if (required_next == s_route[t_rank + 1]) {
+        // Job after t_rank must follow, can't reverse
+        return false;
+      }
+    }
+  }
+
+  // Check if reversal would break shipment atomicity at boundaries
+  if (s_rank > 0) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& boundary_job = _input.jobs[s_route[s_rank]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        boundary_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank]) {
+      // Would break shipment at boundary
+      return false;
+    }
+  }
+
+  if (t_rank < s_route.size() - 1) {
+    const auto& boundary_job = _input.jobs[s_route[t_rank]];
+    const auto& after_job = _input.jobs[s_route[t_rank + 1]];
+
+    if (boundary_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[t_rank] + 1 == s_route[t_rank + 1]) {
+      // Would break shipment at boundary
+      return false;
+    }
+  }
+
   bool valid = (!_input.has_shipments() || reversal_ok_for_shipments()) &&
                is_valid_for_range_bounds();
 

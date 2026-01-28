@@ -180,6 +180,10 @@ public:
   void update_route_eval(const RawRoute& raw_route);
 
   void update_route_bbox(const RawRoute& raw_route);
+
+  // Constraint validation - checks if solution satisfies all constraints
+  template <class Route>
+  bool is_valid_solution(const std::vector<Route>& routes) const;
 };
 
 } // namespace vroom::utils

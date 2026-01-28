@@ -183,6 +183,72 @@ void CrossExchange::compute_gain() {
 bool CrossExchange::is_valid() {
   assert(_gain_upper_bound_computed);
 
+  // Check if removal from source would break a relation sequence
+  if (s_rank > 0) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+      if (required_next == s_route[s_rank]) {
+        return false;
+      }
+    }
+  }
+
+  if (s_rank + 1 < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank + 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank + 1].value();
+      if (s_rank + 2 < s_route.size() && required_next == s_route[s_rank + 2]) {
+        return false;
+      }
+    }
+  }
+
+  // Check if removal from target would break a relation sequence
+  if (t_rank > 0) {
+    if (_sol_state.relation_next_job[t_vehicle][t_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[t_vehicle][t_rank - 1].value();
+      if (required_next == t_route[t_rank]) {
+        return false;
+      }
+    }
+  }
+
+  if (t_rank + 1 < t_route.size() - 1) {
+    if (_sol_state.relation_next_job[t_vehicle][t_rank + 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[t_vehicle][t_rank + 1].value();
+      if (t_rank + 2 < t_route.size() && required_next == t_route[t_rank + 2]) {
+        return false;
+      }
+    }
+  }
+
+  // Check if swapping would break shipment atomicity in source
+  if (s_rank > 0 && s_rank + 2 < s_route.size()) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 2]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 2]) {
+      return false;
+    }
+  }
+
+  // Check if swapping would break shipment atomicity in target
+  if (t_rank > 0 && t_rank + 2 < t_route.size()) {
+    const auto& before_job = _input.jobs[t_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[t_route[t_rank + 2]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank - 1] + 1 == t_route[t_rank + 2]) {
+      return false;
+    }
+  }
+
   auto target_pickup = _input.jobs[t_route[t_rank]].pickup +
                        _input.jobs[t_route[t_rank + 1]].pickup;
 

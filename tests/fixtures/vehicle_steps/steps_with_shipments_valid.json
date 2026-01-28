@@ -1,0 +1,146 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "start_index": 0,
+      "end_index": 0,
+      "capacity": [
+        4
+      ],
+      "steps": [
+        {
+          "type": "job",
+          "id": 50000
+        },
+        {
+          "type": "pickup",
+          "id": 60000
+        },
+        {
+          "type": "delivery",
+          "id": 60000
+        },
+        {
+          "type": "job",
+          "id": 50001
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": 50000,
+      "location_index": 1,
+      "service": 300,
+      "delivery": [
+        0
+      ],
+      "description": "Job before shipment"
+    },
+    {
+      "id": 50001,
+      "location_index": 4,
+      "service": 300,
+      "delivery": [
+        0
+      ],
+      "description": "Job after shipment"
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 60000,
+        "location_index": 2,
+        "service": 300
+      },
+      "delivery": {
+        "id": 60000,
+        "location_index": 3,
+        "service": 300
+      },
+      "amount": [
+        1
+      ],
+      "description": "Shipment with no interruptions"
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [
+          0,
+          100,
+          100,
+          100,
+          100
+        ],
+        [
+          100,
+          0,
+          100,
+          100,
+          100
+        ],
+        [
+          100,
+          100,
+          0,
+          100,
+          100
+        ],
+        [
+          100,
+          100,
+          100,
+          0,
+          100
+        ],
+        [
+          100,
+          100,
+          100,
+          100,
+          0
+        ]
+      ],
+      "distances": [
+        [
+          0,
+          100,
+          100,
+          100,
+          100
+        ],
+        [
+          100,
+          0,
+          100,
+          100,
+          100
+        ],
+        [
+          100,
+          100,
+          0,
+          100,
+          100
+        ],
+        [
+          100,
+          100,
+          100,
+          0,
+          100
+        ],
+        [
+          100,
+          100,
+          100,
+          100,
+          0
+        ]
+      ]
+    }
+  }
+}

@@ -64,6 +64,74 @@ void IntraExchange::compute_gain() {
 }
 
 bool IntraExchange::is_valid() {
+  // Check if swapping would break relation sequences
+  if (s_rank > 0 && _sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+    if (required_next == s_route[s_rank]) {
+      // Job at s_rank must follow previous job
+      return false;
+    }
+  }
+
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (required_next == s_route[s_rank + 1]) {
+        // Next job must follow job at s_rank
+        return false;
+      }
+    }
+  }
+
+  if (t_rank > 0 && _sol_state.relation_next_job[s_vehicle][t_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][t_rank - 1].value();
+    if (required_next == s_route[t_rank]) {
+      // Job at t_rank must follow previous job
+      return false;
+    }
+  }
+
+  if (t_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][t_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][t_rank].value();
+      if (required_next == s_route[t_rank + 1]) {
+        // Next job must follow job at t_rank
+        return false;
+      }
+    }
+  }
+
+  // Check if swapping would break shipment atomicity
+  // Check positions around s_rank
+  if (s_rank > 0 && s_rank < s_route.size() - 1) {
+    const auto& before_s = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_s = _input.jobs[s_route[s_rank + 1]];
+
+    if (before_s.type == JOB_TYPE::PICKUP &&
+        after_s.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 1]) {
+      // Would interrupt shipment at s_rank
+      return false;
+    }
+  }
+
+  // Check positions around t_rank
+  if (t_rank > 0 && t_rank < s_route.size() - 1) {
+    const auto& before_t = _input.jobs[s_route[t_rank - 1]];
+    const auto& after_t = _input.jobs[s_route[t_rank + 1]];
+
+    if (before_t.type == JOB_TYPE::PICKUP &&
+        after_t.type == JOB_TYPE::DELIVERY &&
+        s_route[t_rank - 1] + 1 == s_route[t_rank + 1]) {
+      // Would interrupt shipment at t_rank
+      return false;
+    }
+  }
+
   return is_valid_for_range_bounds() &&
          source.is_valid_addition_for_capacity_inclusion(_input,
                                                          _delivery,

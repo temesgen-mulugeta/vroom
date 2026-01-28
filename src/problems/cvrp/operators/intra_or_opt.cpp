@@ -138,6 +138,64 @@ void IntraOrOpt::compute_gain() {
 bool IntraOrOpt::is_valid() {
   assert(_gain_upper_bound_computed);
 
+  // Check if moving edge would break relation sequences
+  if (s_rank > 0) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+      if (required_next == s_route[s_rank]) {
+        return false;
+      }
+    }
+  }
+
+  if (s_rank + 1 < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank + 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank + 1].value();
+      if (s_rank + 2 < s_route.size() && required_next == s_route[s_rank + 2]) {
+        return false;
+      }
+    }
+  }
+
+  // Check if removing edge would break shipment atomicity
+  if (s_rank > 0 && s_rank + 2 < s_route.size()) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 2]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 2]) {
+      return false;
+    }
+  }
+
+  // Check if insertion would break shipment atomicity
+  auto insert_pos = t_rank;
+  if (s_rank < t_rank) {
+    insert_pos = t_rank - 2;  // After removal of 2 jobs
+  }
+
+  if (insert_pos > 0 && insert_pos < s_route.size() - 2) {
+    // Will need to check after the edge is moved, but we can check boundaries
+    Index boundary_before = (insert_pos <= s_rank) ? insert_pos :
+                           (insert_pos > s_rank + 1) ? insert_pos - 2 : 0;
+    Index boundary_after = boundary_before + 1;
+
+    if (boundary_before < s_route.size() && boundary_after < s_route.size()) {
+      const auto& before_job = _input.jobs[s_route[boundary_before]];
+      const auto& after_job = _input.jobs[s_route[boundary_after]];
+
+      if (before_job.type == JOB_TYPE::PICKUP &&
+          after_job.type == JOB_TYPE::DELIVERY &&
+          s_route[boundary_before] + 1 == s_route[boundary_after]) {
+        // Would interrupt existing shipment
+        return false;
+      }
+    }
+  }
+
   const auto& s_v = _input.vehicles[s_vehicle];
   const auto& s_eval = _sol_state.route_evals[s_vehicle];
   const auto normal_eval = s_gain + _normal_t_gain;

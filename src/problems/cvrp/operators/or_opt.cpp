@@ -105,6 +105,58 @@ void OrOpt::compute_gain() {
 bool OrOpt::is_valid() {
   assert(_gain_upper_bound_computed);
 
+  // Check if removal from source would break a relation sequence
+  if (s_rank > 0) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+      if (required_next == s_route[s_rank]) {
+        // First job in edge must follow previous job in a relation
+        return false;
+      }
+    }
+  }
+
+  if (s_rank + 1 < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank + 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank + 1].value();
+      if (s_rank + 2 < s_route.size() && required_next == s_route[s_rank + 2]) {
+        // Job after edge must follow second job in edge in a relation
+        return false;
+      }
+    }
+  }
+
+  // Check if removal would break shipment atomicity
+  // (if removing edge would separate a pickup from its delivery)
+  if (s_rank > 0 && s_rank + 2 < s_route.size()) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 2]];
+
+    // Check if before is pickup and after is its delivery
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 2]) {
+      // Removing this edge would separate pickup from delivery
+      return false;
+    }
+  }
+
+  // Check if insertion at target would break shipment atomicity
+  if (t_rank > 0 && t_rank < t_route.size()) {
+    const auto& before_job = _input.jobs[t_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[t_route[t_rank]];
+
+    // Check if inserting between a pickup and its delivery
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank - 1] + 1 == t_route[t_rank]) {
+      // Would interrupt shipment
+      return false;
+    }
+  }
+
   auto edge_pickup = _input.jobs[s_route[s_rank]].pickup +
                      _input.jobs[s_route[s_rank + 1]].pickup;
 

@@ -216,6 +216,22 @@ public:
                Iter last_job,
                Index first_rank,
                Index last_rank);
+
+  // Constraint validation methods for relations, steps, and shipment atomicity
+
+  // Check if job at position maintains relation constraints
+  bool is_valid_for_relation(const Input& input, Index position) const;
+
+  // Check if inserting job at position breaks relation constraints
+  bool is_valid_relation_insertion(const Input& input,
+                                   Index job_rank,
+                                   Index position) const;
+
+  // Check if vehicle step sequence is maintained
+  bool is_valid_step_sequence(const Input& input) const;
+
+  // Check if shipment atomicity is maintained (no jobs between pickup/delivery)
+  bool is_valid_shipment_atomicity(const Input& input) const;
 };
 
 } // namespace vroom

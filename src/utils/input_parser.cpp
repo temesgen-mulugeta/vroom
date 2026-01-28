@@ -195,9 +195,7 @@ inline void check_relation(const rapidjson::Value& v) {
   if (!v.HasMember("steps") || !v["steps"].IsArray()) {
     throw InputException("Missing steps array for relation.");
   }
-  if (v["steps"].Size() < 2) {
-    throw InputException("Relation must have at least 2 steps.");
-  }
+  // Empty relations are allowed and will be skipped during processing
 }
 
 inline void check_location(const rapidjson::Value& v,
@@ -691,6 +689,11 @@ void parse(Input& input, const std::string& input_str, bool geometry) {
     for (rapidjson::SizeType i = 0; i < json_input["relations"].Size(); ++i) {
       auto& json_relation = json_input["relations"][i];
       check_relation(json_relation);
+
+      // Skip empty or single-step relations (need at least 2 for a sequence)
+      if (json_relation["steps"].Size() < 2) {
+        continue;
+      }
 
       Relation relation(RELATION_TYPE::IN_DIRECT_SEQUENCE);
 

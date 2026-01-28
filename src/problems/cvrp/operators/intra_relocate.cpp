@@ -84,6 +84,64 @@ void IntraRelocate::compute_gain() {
 }
 
 bool IntraRelocate::is_valid() {
+  // Check if removal would break a relation sequence
+  if (s_rank > 0 && _sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+    if (required_next == s_route[s_rank]) {
+      // This job must follow the previous job in a relation
+      return false;
+    }
+  }
+
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (required_next == s_route[s_rank + 1]) {
+        // Next job must follow this job in a relation
+        return false;
+      }
+    }
+  }
+
+  // Check if removal would break shipment atomicity
+  if (s_rank > 0 && s_rank < s_route.size() - 1) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 1]) {
+      // Removing this job would separate pickup from delivery
+      return false;
+    }
+  }
+
+  // Check if insertion would break shipment atomicity
+  auto insert_pos = t_rank;
+  if (s_rank < t_rank) {
+    insert_pos = t_rank - 1;  // After removal, position shifts
+  }
+
+  if (insert_pos > 0 && insert_pos < s_route.size() - 1) {
+    // Check the position where the job will be inserted (after removal)
+    Index before_idx = (insert_pos - 1 < s_rank) ? insert_pos - 1 : insert_pos;
+    Index after_idx = (insert_pos >= s_rank) ? insert_pos : insert_pos + 1;
+
+    if (before_idx < s_route.size() && after_idx < s_route.size()) {
+      const auto& before_job = _input.jobs[s_route[before_idx]];
+      const auto& after_job = _input.jobs[s_route[after_idx]];
+
+      if (before_job.type == JOB_TYPE::PICKUP &&
+          after_job.type == JOB_TYPE::DELIVERY &&
+          s_route[before_idx] + 1 == s_route[after_idx]) {
+        // Would interrupt shipment
+        return false;
+      }
+    }
+  }
+
   return is_valid_for_range_bounds() &&
          source.is_valid_addition_for_capacity_inclusion(_input,
                                                          _delivery,

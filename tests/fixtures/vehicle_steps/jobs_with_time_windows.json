@@ -1,0 +1,97 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "capacity": [
+        4,
+        0,
+        0,
+        0
+      ],
+      "time_window": [
+        0,
+        86400
+      ],
+      "steps": [
+        {
+          "type": "job",
+          "id": 20000,
+          "forced_service": {
+            "after": 28800
+          }
+        },
+        {
+          "type": "job",
+          "id": 20001,
+          "forced_service": {
+            "before": 36000
+          }
+        }
+      ],
+      "start_index": 0,
+      "end_index": 0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 20000,
+      "service": 600,
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "description": "Must start after 8am",
+      "time_windows": [
+        [
+          28800,
+          32400
+        ]
+      ],
+      "location_index": 0
+    },
+    {
+      "id": 20001,
+      "service": 600,
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "description": "Must complete before 10am",
+      "time_windows": [
+        [
+          30600,
+          36000
+        ]
+      ],
+      "location_index": 1
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [
+          0,
+          100
+        ],
+        [
+          100,
+          0
+        ]
+      ],
+      "distances": [
+        [
+          0,
+          100
+        ],
+        [
+          100,
+          0
+        ]
+      ]
+    }
+  }
+}

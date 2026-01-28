@@ -99,6 +99,52 @@ void ReverseTwoOpt::compute_gain() {
 bool ReverseTwoOpt::is_valid() {
   assert(gain_computed);
 
+  // Check if reversing and swapping would break relation sequences
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (s_rank + 1 < s_route.size() && required_next == s_route[s_rank + 1]) {
+        // Would break relation at source boundary
+        return false;
+      }
+    }
+  }
+
+  if (t_rank > 0 && _sol_state.relation_next_job[t_vehicle][t_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[t_vehicle][t_rank - 1].value();
+    if (required_next == t_route[t_rank]) {
+      // Would break relation at target boundary
+      return false;
+    }
+  }
+
+  // Check if reversing would break shipment atomicity at boundaries
+  if (s_rank < s_route.size() - 1) {
+    const auto& boundary_job = _input.jobs[s_route[s_rank]];
+    const auto& next_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (boundary_job.type == JOB_TYPE::PICKUP &&
+        next_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank] + 1 == s_route[s_rank + 1]) {
+      // Would separate shipment at source boundary
+      return false;
+    }
+  }
+
+  if (t_rank > 0) {
+    const auto& prev_job = _input.jobs[t_route[t_rank - 1]];
+    const auto& boundary_job = _input.jobs[t_route[t_rank]];
+
+    if (prev_job.type == JOB_TYPE::PICKUP &&
+        boundary_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank - 1] + 1 == t_route[t_rank]) {
+      // Would separate shipment at target boundary
+      return false;
+    }
+  }
+
   const auto& t_pickup = target.fwd_pickups(t_rank);
 
   const auto& s_pickup = source.bwd_pickups(s_rank);

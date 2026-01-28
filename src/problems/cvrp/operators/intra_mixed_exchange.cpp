@@ -135,6 +135,68 @@ void IntraMixedExchange::compute_gain() {
 bool IntraMixedExchange::is_valid() {
   assert(_gain_upper_bound_computed);
 
+  // Check if swapping node with edge would break relation sequences
+  if (s_rank > 0 && _sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+    if (required_next == s_route[s_rank]) {
+      return false;
+    }
+  }
+
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (required_next == s_route[s_rank + 1]) {
+        return false;
+      }
+    }
+  }
+
+  if (t_rank > 0) {
+    if (_sol_state.relation_next_job[s_vehicle][t_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][t_rank - 1].value();
+      if (required_next == s_route[t_rank]) {
+        return false;
+      }
+    }
+  }
+
+  if (t_rank + 1 < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][t_rank + 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][t_rank + 1].value();
+      if (t_rank + 2 < s_route.size() && required_next == s_route[t_rank + 2]) {
+        return false;
+      }
+    }
+  }
+
+  // Check if swapping would break shipment atomicity
+  if (s_rank > 0 && s_rank < s_route.size() - 1) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 1]) {
+      return false;
+    }
+  }
+
+  if (t_rank > 0 && t_rank + 2 < s_route.size()) {
+    const auto& before_job = _input.jobs[s_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[t_rank + 2]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[t_rank - 1] + 1 == s_route[t_rank + 2]) {
+      return false;
+    }
+  }
+
   const auto& s_v = _input.vehicles[s_vehicle];
   const auto& s_eval = _sol_state.route_evals[s_vehicle];
   const auto normal_eval = _normal_s_gain + t_gain;

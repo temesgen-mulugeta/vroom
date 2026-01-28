@@ -8,11 +8,171 @@ All rights reserved (see LICENSE).
 */
 
 #include <algorithm>
+#include <iostream>
 
 #include "algorithms/heuristics/heuristics.h"
 #include "utils/helpers.h"
 
 namespace vroom::heuristics {
+
+// Helper function to find position of a job in vehicle steps
+inline std::optional<Index> find_job_position_in_steps(
+  const std::vector<VehicleStep>& steps,
+  const Input& input,
+  Index job_rank) {
+  for (Index i = 0; i < steps.size(); ++i) {
+    const auto& step = steps[i];
+    if (step.type != STEP_TYPE::JOB || !step.job_type.has_value()) {
+      continue;
+    }
+
+    Index step_rank = 0;
+    if (step.job_type.value() == JOB_TYPE::SINGLE) {
+      if (!input.job_id_to_rank.contains(step.id)) {
+        continue;
+      }
+      step_rank = input.job_id_to_rank.at(step.id);
+    } else if (step.job_type.value() == JOB_TYPE::PICKUP) {
+      if (!input.pickup_id_to_rank.contains(step.id)) {
+        continue;
+      }
+      step_rank = input.pickup_id_to_rank.at(step.id);
+    } else if (step.job_type.value() == JOB_TYPE::DELIVERY) {
+      if (!input.delivery_id_to_rank.contains(step.id)) {
+        continue;
+      }
+      step_rank = input.delivery_id_to_rank.at(step.id);
+    }
+
+    if (step_rank == job_rank) {
+      return i;
+    }
+  }
+  return std::nullopt;
+}
+
+// Helper function to check if a job is in a route
+inline bool is_job_in_route(const std::vector<Index>& route, Index job_rank) {
+  return std::find(route.begin(), route.end(), job_rank) != route.end();
+}
+
+// Check if inserting at position would break shipment atomicity
+// (no jobs between pickup and delivery)
+template <class Route>
+inline bool would_break_shipment_atomicity(const Input& input,
+                                           const Route& route,
+                                           Index position) {
+  if (position == 0 || position >= route.route.size()) {
+    return false;  // Can't break atomicity at start or end
+  }
+
+  const Index before_job = route.route[position - 1];
+  const Index after_job = route.route[position];
+
+  const auto& before = input.jobs[before_job];
+  const auto& after = input.jobs[after_job];
+
+  // Check if before is a pickup and after is its delivery
+  if (before.type == JOB_TYPE::PICKUP &&
+      after.type == JOB_TYPE::DELIVERY &&
+      before_job + 1 == after_job) {
+    return true;  // Would interrupt shipment
+  }
+
+  return false;
+}
+
+// Check if inserting at position would break the consecutive vehicle steps constraint
+// Vehicle steps must remain consecutive with NO jobs/shipments between them
+template <class Route>
+inline bool would_break_consecutive_steps(const Input& input,
+                                          const Route& route,
+                                          Index position,
+                                          Index v_rank) {
+  const auto& vehicle = input.vehicles[v_rank];
+
+  if (vehicle.steps.empty() || position == 0) {
+    return false;  // No steps or inserting at start
+  }
+
+  // Check if we're trying to insert between two consecutive vehicle steps
+  if (position > 0 && position < route.route.size()) {
+    Index before_job = route.route[position - 1];
+    Index after_job = route.route[position];
+
+    // Check if before_job is a vehicle step
+    bool before_is_step = input.fixed_job_ranks.contains(before_job);
+    bool after_is_step = input.fixed_job_ranks.contains(after_job);
+
+    if (before_is_step && after_is_step) {
+      // Both before and after are vehicle steps
+      // Check if they are consecutive steps in vehicle.steps
+      auto before_step_pos = find_job_position_in_steps(vehicle.steps, input, before_job);
+      auto after_step_pos = find_job_position_in_steps(vehicle.steps, input, after_job);
+
+      if (before_step_pos.has_value() && after_step_pos.has_value()) {
+        // Check if after_step immediately follows before_step
+        if (after_step_pos.value() == before_step_pos.value() + 1) {
+          return true;  // Would break consecutive steps!
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+// Check if all predecessor steps for a fixed job are already in the route
+template <class Route>
+inline bool can_insert_fixed_job(const Input& input,
+                                 const Route& route,
+                                 Index job_rank,
+                                 Index v_rank) {
+  const auto& vehicle = input.vehicles[v_rank];
+
+  if (vehicle.steps.empty()) {
+    return true;  // No step constraints
+  }
+
+  // Find position of this job in vehicle.steps
+  auto step_pos = find_job_position_in_steps(vehicle.steps, input, job_rank);
+  if (!step_pos.has_value()) {
+    return true;  // Not a step, can insert freely
+  }
+
+  // Check if all previous steps are already in the route
+  for (Index i = 0; i < step_pos.value(); ++i) {
+    const auto& prev_step = vehicle.steps[i];
+    if (prev_step.type != STEP_TYPE::JOB || !prev_step.job_type.has_value()) {
+      continue;
+    }
+
+    Index prev_job_rank = 0;
+    if (prev_step.job_type.value() == JOB_TYPE::SINGLE) {
+      if (!input.job_id_to_rank.contains(prev_step.id)) {
+        continue;
+      }
+      prev_job_rank = input.job_id_to_rank.at(prev_step.id);
+    } else if (prev_step.job_type.value() == JOB_TYPE::PICKUP) {
+      if (!input.pickup_id_to_rank.contains(prev_step.id)) {
+        continue;
+      }
+      prev_job_rank = input.pickup_id_to_rank.at(prev_step.id);
+    } else if (prev_step.job_type.value() == JOB_TYPE::DELIVERY) {
+      if (!input.delivery_id_to_rank.contains(prev_step.id)) {
+        continue;
+      }
+      prev_job_rank = input.delivery_id_to_rank.at(prev_step.id);
+    }
+
+    // Check if this predecessor is in the route
+    if (!is_job_in_route(route.route, prev_job_rank)) {
+      return false;  // Predecessor not in route yet
+    }
+  }
+
+  return true;  // All predecessors are in route
+}
 
 // Add seed job to route if required and return current cost of route
 // without vehicle fixed cost.
@@ -299,20 +459,37 @@ void assign_relations_to_routes(const Input& input,
         continue;
       }
 
-      // Insert all shipments at the end of the route
-      std::vector<Index> new_route = route.route;
+      // Check if the relation shipments can be inserted at the end
+      // First, build the shipments vector
+      std::vector<Index> shipments_to_add;
       for (size_t i = 0; i < relation.pickup_ranks.size(); ++i) {
-        new_route.push_back(relation.pickup_ranks[i]);     // pickup
-        new_route.push_back(relation.delivery_ranks[i]);   // delivery
+        shipments_to_add.push_back(relation.pickup_ranks[i]);     // pickup
+        shipments_to_add.push_back(relation.delivery_ranks[i]);   // delivery
       }
 
-      // Set the route - this will be validated during local search
-      route.set_route(input, new_route);
+      // Validate insertion at the end
+      Index insert_pos = route.size();
+      if (!route.is_valid_addition_for_tw(input,
+                                          input.zero_amount(),
+                                          shipments_to_add.begin(),
+                                          shipments_to_add.end(),
+                                          insert_pos,
+                                          insert_pos)) {
+        continue;  // Can't insert on this vehicle
+      }
+
+      // Use replace() instead of set_route() to properly handle TWRoute arrays
+      route.replace(input,
+                    input.zero_amount(),
+                    shipments_to_add.begin(),
+                    shipments_to_add.end(),
+                    insert_pos,
+                    insert_pos);
 
       // Remove from unassigned
-      for (Index pickup_rank : relation.pickup_ranks) {
-        unassigned.erase(pickup_rank);
-        unassigned.erase(pickup_rank + 1); // delivery
+      for (size_t i = 0; i < relation.pickup_ranks.size(); ++i) {
+        unassigned.erase(relation.pickup_ranks[i]);
+        unassigned.erase(relation.delivery_ranks[i]);
       }
 
       assigned = true;
@@ -360,6 +537,11 @@ inline Eval fill_route(const Input& input,
             input.fixed_job_to_vehicle.at(job_rank) != v_rank) {
           continue;
         }
+
+        // NEW: Check if this fixed job can be inserted now (predecessors in route)
+        if (!can_insert_fixed_job(input, route, job_rank, v_rank)) {
+          continue;  // Predecessor steps not yet in route, skip for now
+        }
       }
 
       const auto& current_job = input.jobs[job_rank];
@@ -379,6 +561,45 @@ inline Eval fill_route(const Input& input,
         }
 
         for (Index r = 0; r <= route.size(); ++r) {
+          // NEW: Skip if inserting here would break shipment atomicity
+          if (would_break_shipment_atomicity(input, route, r)) {
+            continue;
+          }
+
+          // NEW: Skip if inserting here would break consecutive vehicle steps
+          // Vehicle steps must remain consecutive with nothing in between
+          if (would_break_consecutive_steps(input, route, r, v_rank)) {
+            continue;
+          }
+
+          // NEW: Skip if inserting here would break a relation sequence
+          // Check if the job before position r is part of a relation and requires a specific next job
+          if (r > 0 && r < route.route.size()) {
+            Index prev_job = route.route[r - 1];
+            if (input.job_rank_to_relation.contains(prev_job)) {
+              Index rel_idx = input.job_rank_to_relation.at(prev_job);
+              Index pos_in_rel = input.job_rank_to_relation_position.at(prev_job);
+              const auto& relation = input.relations[rel_idx];
+
+              // Check if prev_job requires a specific next job
+              Index expected_next = std::numeric_limits<Index>::max();
+              if (pos_in_rel < relation.pickup_ranks.size()) {
+                // Previous job is a pickup, next should be its delivery
+                expected_next = relation.delivery_ranks[pos_in_rel];
+              } else if (pos_in_rel < relation.pickup_ranks.size() - 1) {
+                // Previous job is a delivery (but not the last), next should be next pickup
+                expected_next = relation.pickup_ranks[pos_in_rel + 1];
+              }
+
+              if (expected_next != std::numeric_limits<Index>::max() &&
+                  r < route.route.size() && route.route[r] != expected_next) {
+                // The next job is not what the relation expects, but it's also not the expected job
+                // This means inserting here would break the relation
+                continue;
+              }
+            }
+          }
+
           const auto current_eval =
             utils::addition_eval(input, job_rank, vehicle, route.route, r);
 
@@ -434,6 +655,16 @@ inline Eval fill_route(const Input& input,
         }
 
         for (Index pickup_r = 0; pickup_r <= route.size(); ++pickup_r) {
+          // NEW: Skip if inserting pickup here would break shipment atomicity
+          if (would_break_shipment_atomicity(input, route, pickup_r)) {
+            continue;
+          }
+
+          // NEW: Skip if inserting here would break consecutive vehicle steps
+          if (would_break_consecutive_steps(input, route, pickup_r, v_rank)) {
+            continue;
+          }
+
           const auto p_add = utils::addition_eval(input,
                                                   job_rank,
                                                   vehicle,
@@ -473,34 +704,18 @@ inline Eval fill_route(const Input& input,
 
           Amount modified_delivery = input.zero_amount();
 
-          for (Index delivery_r = pickup_r; delivery_r <= route.size();
-               ++delivery_r) {
-            // Update state variables along the way before potential
-            // early abort.
-            if (pickup_r < delivery_r) {
-              modified_with_pd.push_back(route.route[delivery_r - 1]);
-              const auto& new_modified_job =
-                input.jobs[route.route[delivery_r - 1]];
-              if (new_modified_job.type == JOB_TYPE::SINGLE) {
-                modified_delivery += new_modified_job.delivery;
-              }
-            }
+          // HARD CONSTRAINT: Shipments MUST be atomic (pickup immediately followed by delivery)
+          // For NEMT use case, we cannot have any jobs between pickup and dropoff
+          // Only try atomic placement (delivery_r == pickup_r)
+          Index delivery_r = pickup_r;
 
-            if (!static_cast<bool>(valid_delivery_insertions[delivery_r])) {
-              continue;
-            }
-
-            Eval current_eval;
-            if (pickup_r == delivery_r) {
-              current_eval = utils::addition_eval(input,
-                                                  job_rank,
-                                                  vehicle,
-                                                  route.route,
-                                                  pickup_r,
-                                                  pickup_r + 1);
-            } else {
-              current_eval = p_add + d_adds[delivery_r];
-            }
+          if (static_cast<bool>(valid_delivery_insertions[delivery_r])) {
+            Eval current_eval = utils::addition_eval(input,
+                                                    job_rank,
+                                                    vehicle,
+                                                    route.route,
+                                                    pickup_r,
+                                                    pickup_r + 1);
 
             const double current_cost =
               current_eval.cost -
@@ -509,12 +724,12 @@ inline Eval fill_route(const Input& input,
             if (current_cost < best_cost) {
               modified_with_pd.push_back(job_rank + 1);
 
-              // Update best cost depending on validity.
+              // Validate atomic placement
               const bool valid =
                 (vehicle.ok_for_range_bounds(route_eval + current_eval)) &&
                 route
                   .is_valid_addition_for_capacity_inclusion(input,
-                                                            modified_delivery,
+                                                            input.zero_amount(),
                                                             modified_with_pd
                                                               .begin(),
                                                             modified_with_pd
@@ -522,7 +737,7 @@ inline Eval fill_route(const Input& input,
                                                             pickup_r,
                                                             delivery_r) &&
                 route.is_valid_addition_for_tw(input,
-                                               modified_delivery,
+                                               input.zero_amount(),
                                                modified_with_pd.begin(),
                                                modified_with_pd.end(),
                                                pickup_r,
@@ -535,11 +750,13 @@ inline Eval fill_route(const Input& input,
                 best_job_rank = job_rank;
                 best_pickup_r = pickup_r;
                 best_delivery_r = delivery_r;
-                best_modified_delivery = modified_delivery;
+                best_modified_delivery = input.zero_amount();
                 best_eval = current_eval;
               }
             }
           }
+          // If atomic placement is not valid, this shipment will remain unassigned
+          // This ensures ALL assigned shipments are atomic
         }
       }
     }
@@ -586,16 +803,13 @@ inline Eval fill_route(const Input& input,
                 }
               }
 
-              // CRITICAL: For multi-shipment relations, ONLY insert if delivery is EXACTLY at route end
-              // This is the ONLY way to guarantee the second shipment inserts immediately after
-              if (can_insert && relation.pickup_ranks.size() > 1) {
-                // Delivery MUST be at the absolute end (best_delivery_r == route.size())
-                if (best_delivery_r != route.size()) {
-                  // Any jobs after delivery will cause other shipments to fill the gap
-                  // REJECT to ensure all-or-nothing
-                  can_insert = false;
-                }
-              }
+              // DISABLED: This check was too strict and prevented relations from being inserted
+              // TODO: Need better mechanism to ensure subsequent shipments insert immediately after
+              // if (can_insert && relation.pickup_ranks.size() > 1) {
+              //   if (best_delivery_r != route.size()) {
+              //     can_insert = false;
+              //   }
+              // }
             }
           }
 
@@ -619,8 +833,42 @@ inline Eval fill_route(const Input& input,
             unassigned.erase(best_job_rank + 1);
             keep_going = true;
 
-            // NOTE: Batch insertion disabled - rely on priority boost + constraints
-            // Non-first shipments will naturally insert immediately after due to constraint check
+            // If this is the first shipment in a relation, insert ALL remaining shipments immediately
+            if (input.job_rank_to_relation.contains(best_job_rank)) {
+              Index relation_idx = input.job_rank_to_relation.at(best_job_rank);
+              Index position = input.job_rank_to_relation_position.at(best_job_rank);
+              const auto& relation = input.relations[relation_idx];
+
+              if (position == 0 && relation.pickup_ranks.size() > 1) {
+                // This was the first shipment - insert remaining shipments in sequence
+
+                // Build vector with remaining shipments to append
+                std::vector<Index> shipments_to_add;
+                Amount total_additional_delivery = input.zero_amount();
+
+                for (size_t i = 1; i < relation.pickup_ranks.size(); ++i) {
+                  Index next_pickup = relation.pickup_ranks[i];
+                  Index next_delivery = relation.delivery_ranks[i];
+
+                  shipments_to_add.push_back(next_pickup);
+                  shipments_to_add.push_back(next_delivery);
+
+                  unassigned.erase(next_pickup);
+                  unassigned.erase(next_delivery);
+
+                  total_additional_delivery += input.jobs[next_pickup].delivery;
+                }
+
+                // Use replace() to properly handle TWRoute arrays
+                Index append_pos = route.size();
+                route.replace(input,
+                             total_additional_delivery,
+                             shipments_to_add.begin(),
+                             shipments_to_add.end(),
+                             append_pos,
+                             append_pos);
+              }
+            }
           }
           // If can_insert is false, skip this insertion - leave relation unassigned
 
@@ -740,6 +988,11 @@ Eval basic(const Input& input,
 
   Eval sol_eval;
 
+  // PRIORITY: Assign complete relations first before filling with other shipments
+  if (!input.relations.empty()) {
+    assign_relations_to_routes(input, routes, unassigned);
+  }
+
   for (Index v = 0; v < nb_vehicles && !unassigned.empty(); ++v) {
     auto v_rank = vehicles_ranks[v];
     auto& current_r = routes[v_rank];
@@ -774,11 +1027,10 @@ Eval dynamic_vehicle_choice(const Input& input,
 
   Eval sol_eval;
 
-  // TEMPORARILY DISABLED for testing
   // PRIORITY: Assign complete relations first before filling with other shipments
-  // if (!input.relations.empty()) {
-  //   assign_relations_to_routes(input, routes, unassigned);
-  // }
+  if (!input.relations.empty()) {
+    assign_relations_to_routes(input, routes, unassigned);
+  }
 
   while (!vehicles_ranks.empty() && !unassigned.empty()) {
     // For any unassigned job at j, jobs_min_costs[j]

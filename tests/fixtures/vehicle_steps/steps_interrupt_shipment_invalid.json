@@ -1,0 +1,111 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "start_index": 0,
+      "end_index": 0,
+      "capacity": [
+        4
+      ],
+      "steps": [
+        {
+          "type": "pickup",
+          "id": 70000
+        },
+        {
+          "type": "job",
+          "id": 70100
+        },
+        {
+          "type": "delivery",
+          "id": 70000
+        }
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": 70100,
+      "location_index": 2,
+      "service": 300,
+      "delivery": [
+        0
+      ],
+      "description": "Job that interrupts shipment (should NOT be between pickup and delivery)"
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 70000,
+        "location_index": 1,
+        "service": 300
+      },
+      "delivery": {
+        "id": 70000,
+        "location_index": 3,
+        "service": 300
+      },
+      "amount": [
+        1
+      ],
+      "description": "Shipment that gets interrupted by vehicle step"
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [
+          0,
+          100,
+          100,
+          100
+        ],
+        [
+          100,
+          0,
+          100,
+          100
+        ],
+        [
+          100,
+          100,
+          0,
+          100
+        ],
+        [
+          100,
+          100,
+          100,
+          0
+        ]
+      ],
+      "distances": [
+        [
+          0,
+          100,
+          100,
+          100
+        ],
+        [
+          100,
+          0,
+          100,
+          100
+        ],
+        [
+          100,
+          100,
+          0,
+          100
+        ],
+        [
+          100,
+          100,
+          100,
+          0
+        ]
+      ]
+    }
+  }
+}

@@ -84,7 +84,44 @@ void PDShift::compute_gain() {
 
 bool PDShift::is_valid() {
   assert(gain_computed);
-  return _valid;
+
+  if (!_valid) {
+    return false;
+  }
+
+  // Check if removal from source would break a relation sequence
+  // PDShift removes both pickup and delivery, so check if anything between them
+  // is part of a relation that would be broken
+  if (_s_d_rank > _s_p_rank + 1) {
+    // There are jobs between pickup and delivery
+    for (Index i = _s_p_rank + 1; i < _s_d_rank; ++i) {
+      // Check if removing the boundary jobs would break relation for middle jobs
+      if (i > 0 && _sol_state.relation_next_job[s_vehicle][i - 1].has_value()) {
+        const Index required_next =
+          _sol_state.relation_next_job[s_vehicle][i - 1].value();
+        if (required_next == s_route[i] && i - 1 < _s_p_rank) {
+          // Job before pickup requires job between pickup and delivery
+          return false;
+        }
+      }
+    }
+  }
+
+  // Check if insertion at target would break shipment atomicity
+  if (_best_t_p_rank > 0 && _best_t_p_rank < t_route.size()) {
+    const auto& before_job = _input.jobs[t_route[_best_t_p_rank - 1]];
+    const auto& after_job = _input.jobs[t_route[_best_t_p_rank]];
+
+    // Check if inserting between a pickup and its delivery
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        t_route[_best_t_p_rank - 1] + 1 == t_route[_best_t_p_rank]) {
+      // Would interrupt shipment
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void PDShift::apply() {

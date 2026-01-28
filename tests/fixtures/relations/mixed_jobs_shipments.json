@@ -1,0 +1,74 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "start_index": 0,
+      "end_index": 0,
+      "capacity": [10]
+    }
+  ],
+  "jobs": [
+    {
+      "id": 100,
+      "location_index": 5,
+      "service": 10,
+      "delivery": [0]
+    },
+    {
+      "id": 101,
+      "location_index": 6,
+      "service": 10,
+      "delivery": [0]
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 70,
+        "location_index": 1,
+        "service": 10
+      },
+      "delivery": {
+        "id": 70,
+        "location_index": 3,
+        "service": 10
+      },
+      "amount": [1]
+    },
+    {
+      "pickup": {
+        "id": 71,
+        "location_index": 2,
+        "service": 10
+      },
+      "delivery": {
+        "id": 71,
+        "location_index": 4,
+        "service": 10
+      },
+      "amount": [1]
+    }
+  ],
+  "relations": [
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {"type": "shipment", "id": 70},
+        {"type": "shipment", "id": 71}
+      ]
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [0, 100, 100, 500, 500, 150, 200],
+        [100, 0, 50, 400, 400, 250, 300],
+        [100, 50, 0, 400, 400, 250, 300],
+        [500, 400, 400, 0, 50, 550, 600],
+        [500, 400, 400, 50, 0, 550, 600],
+        [150, 250, 250, 550, 550, 0, 100],
+        [200, 300, 300, 600, 600, 100, 0]
+      ]
+    }
+  }
+}

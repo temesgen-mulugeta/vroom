@@ -1,0 +1,87 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "capacity": [
+        4,
+        0,
+        0,
+        0
+      ],
+      "steps": [
+        {
+          "type": "job",
+          "id": 10000
+        },
+        {
+          "type": "job",
+          "id": 10001
+        }
+      ],
+      "start_index": 0,
+      "end_index": 0
+    }
+  ],
+  "jobs": [
+    {
+      "id": 10000,
+      "service": 600,
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "description": "Morning job (8am)",
+      "time_windows": [
+        [
+          28800,
+          29400
+        ]
+      ],
+      "location_index": 0
+    },
+    {
+      "id": 10001,
+      "service": 600,
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "description": "Evening job (6pm)",
+      "time_windows": [
+        [
+          64800,
+          65400
+        ]
+      ],
+      "location_index": 1
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [
+          0,
+          100
+        ],
+        [
+          100,
+          0
+        ]
+      ],
+      "distances": [
+        [
+          0,
+          100
+        ],
+        [
+          100,
+          0
+        ]
+      ]
+    }
+  }
+}

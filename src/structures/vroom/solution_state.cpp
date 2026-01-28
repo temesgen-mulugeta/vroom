@@ -759,7 +759,117 @@ void SolutionState::update_route_bbox(const RawRoute& raw_route) {
   }
 }
 
+template <class Route>
+bool SolutionState::is_valid_solution(const std::vector<Route>& routes) const {
+  // Check all relation constraints (in_direct_sequence)
+  for (Index v = 0; v < _nb_vehicles; ++v) {
+    if (v >= routes.size()) {
+      continue;
+    }
+    const auto& route = routes[v].route;
+
+    for (Index i = 0; i < route.size(); ++i) {
+      // Check relation_next_job constraint
+      if (relation_next_job[v][i].has_value()) {
+        Index required_next = relation_next_job[v][i].value();
+
+        // Next job should immediately follow current job
+        if (i + 1 >= route.size() || route[i + 1] != required_next) {
+          return false;  // Relation direct sequence violation
+        }
+      }
+
+      // Check relation_prev_job constraint
+      if (relation_prev_job[v][i].has_value()) {
+        Index required_prev = relation_prev_job[v][i].value();
+
+        // Previous job should immediately precede current job
+        if (i == 0 || route[i - 1] != required_prev) {
+          return false;  // Relation direct sequence violation
+        }
+      }
+    }
+  }
+
+  // Check shipment atomicity (pickup immediately followed by delivery)
+  for (Index v = 0; v < _nb_vehicles; ++v) {
+    if (v >= routes.size()) {
+      continue;
+    }
+    const auto& route = routes[v].route;
+
+    for (Index i = 0; i < route.size(); ++i) {
+      const auto& job = _input.jobs[route[i]];
+
+      if (job.type == JOB_TYPE::PICKUP) {
+        // Check if delivery immediately follows pickup
+        Index delivery_rank = matching_delivery_rank[v][i];
+
+        if (i + 1 >= route.size() || route[i + 1] != delivery_rank) {
+          return false;  // Shipment atomicity violation
+        }
+      }
+    }
+  }
+
+  // Check vehicle step sequence (fixed jobs maintain order)
+  for (Index v = 0; v < _nb_vehicles; ++v) {
+    if (v >= routes.size()) {
+      continue;
+    }
+    const auto& vehicle = _input.vehicles[v];
+    const auto& route = routes[v].route;
+
+    if (vehicle.steps.empty()) {
+      continue;
+    }
+
+    // Build list of fixed jobs in route
+    std::vector<Index> fixed_jobs_in_route;
+    for (Index rank : route) {
+      if (_input.fixed_job_ranks.contains(rank)) {
+        fixed_jobs_in_route.push_back(rank);
+      }
+    }
+
+    // Build expected order from vehicle.steps
+    std::vector<Index> expected_order;
+    for (const auto& step : vehicle.steps) {
+      if (step.type == STEP_TYPE::JOB && step.job_type.has_value()) {
+        if (step.job_type.value() == JOB_TYPE::SINGLE) {
+          Index job_rank = _input.job_id_to_rank.at(step.id);
+          expected_order.push_back(job_rank);
+        } else if (step.job_type.value() == JOB_TYPE::PICKUP) {
+          Index pickup_rank = _input.pickup_id_to_rank.at(step.id);
+          expected_order.push_back(pickup_rank);
+        } else if (step.job_type.value() == JOB_TYPE::DELIVERY) {
+          Index delivery_rank = _input.delivery_id_to_rank.at(step.id);
+          expected_order.push_back(delivery_rank);
+        }
+      }
+    }
+
+    // Compare fixed_jobs_in_route with expected_order
+    if (fixed_jobs_in_route.size() != expected_order.size()) {
+      return false;  // Missing or extra fixed jobs
+    }
+
+    for (size_t i = 0; i < fixed_jobs_in_route.size(); ++i) {
+      if (fixed_jobs_in_route[i] != expected_order[i]) {
+        return false;  // Step sequence violation
+      }
+    }
+  }
+
+  return true;  // All constraints satisfied
+}
+
 template void SolutionState::setup(const std::vector<RawRoute>&);
 template void SolutionState::setup(const std::vector<TWRoute>&);
+
+template bool SolutionState::is_valid_solution(const std::vector<RawRoute>&)
+  const;
+template bool SolutionState::is_valid_solution(const std::vector<TWRoute>&)
+  const;
 
 } // namespace vroom::utils

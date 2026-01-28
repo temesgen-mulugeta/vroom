@@ -1,0 +1,78 @@
+{
+  "vehicles": [
+    {
+      "id": 1,
+      "start_index": 0,
+      "end_index": 0,
+      "capacity": [
+        4
+      ],
+      "steps": [
+        {
+          "type": "pickup",
+          "id": 40000
+        },
+        {
+          "type": "delivery",
+          "id": 40000
+        }
+      ]
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 40000,
+        "location_index": 1,
+        "service": 300
+      },
+      "delivery": {
+        "id": 40000,
+        "location_index": 2,
+        "service": 300
+      },
+      "amount": [
+        1
+      ],
+      "description": "Fixed shipment on vehicle 1"
+    }
+  ],
+  "matrices": {
+    "car": {
+      "durations": [
+        [
+          0,
+          100,
+          100
+        ],
+        [
+          100,
+          0,
+          100
+        ],
+        [
+          100,
+          100,
+          0
+        ]
+      ],
+      "distances": [
+        [
+          0,
+          100,
+          100
+        ],
+        [
+          100,
+          0,
+          100
+        ],
+        [
+          100,
+          100,
+          0
+        ]
+      ]
+    }
+  }
+}

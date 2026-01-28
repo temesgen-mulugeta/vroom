@@ -81,6 +81,49 @@ void Relocate::compute_gain() {
 
 bool Relocate::is_valid() {
   assert(gain_computed);
+
+  // Check if removal from source would break a relation sequence
+  if (s_rank > 0 && s_rank < s_route.size()) {
+    // Check if removing this job would break a relation
+    if (_sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+      if (required_next == s_route[s_rank]) {
+        // This job must follow the previous job in a relation
+        return false;
+      }
+    }
+  }
+
+  // Check if removal would break shipment atomicity
+  // (if this job is between a pickup and its delivery)
+  if (s_rank > 0 && s_rank < s_route.size() - 1) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 1]];
+
+    // Check if before is pickup and after is its delivery
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 1]) {
+      // Removing this job would separate pickup from delivery
+      return false;
+    }
+  }
+
+  // Check if insertion at target would break shipment atomicity
+  if (t_rank > 0 && t_rank < t_route.size()) {
+    const auto& before_job = _input.jobs[t_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[t_route[t_rank]];
+
+    // Check if inserting between a pickup and its delivery
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank - 1] + 1 == t_route[t_rank]) {
+      // Would interrupt shipment
+      return false;
+    }
+  }
+
   return is_valid_for_source_range_bounds() &&
          is_valid_for_target_range_bounds() &&
          target

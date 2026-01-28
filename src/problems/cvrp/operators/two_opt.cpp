@@ -112,6 +112,56 @@ void TwoOpt::compute_gain() {
 bool TwoOpt::is_valid() {
   assert(gain_computed);
 
+  // Check if swapping tails would break relation sequences
+  // Check the boundary - if job at s_rank requires job at s_rank+1, can't break
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (s_rank + 1 < s_route.size() && required_next == s_route[s_rank + 1]) {
+        // Would break relation sequence at source boundary
+        return false;
+      }
+    }
+  }
+
+  // Check the boundary for target
+  if (t_rank < t_route.size() - 1) {
+    if (_sol_state.relation_next_job[t_vehicle][t_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[t_vehicle][t_rank].value();
+      if (t_rank + 1 < t_route.size() && required_next == t_route[t_rank + 1]) {
+        // Would break relation sequence at target boundary
+        return false;
+      }
+    }
+  }
+
+  // Check if swapping would break shipment atomicity at boundaries
+  if (s_rank < s_route.size() - 1) {
+    const auto& s_boundary_job = _input.jobs[s_route[s_rank]];
+    const auto& s_next_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (s_boundary_job.type == JOB_TYPE::PICKUP &&
+        s_next_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank] + 1 == s_route[s_rank + 1]) {
+      // Would separate pickup from delivery at source boundary
+      return false;
+    }
+  }
+
+  if (t_rank < t_route.size() - 1) {
+    const auto& t_boundary_job = _input.jobs[t_route[t_rank]];
+    const auto& t_next_job = _input.jobs[t_route[t_rank + 1]];
+
+    if (t_boundary_job.type == JOB_TYPE::PICKUP &&
+        t_next_job.type == JOB_TYPE::DELIVERY &&
+        t_route[t_rank] + 1 == t_route[t_rank + 1]) {
+      // Would separate pickup from delivery at target boundary
+      return false;
+    }
+  }
+
   const auto& t_pickup = target.bwd_pickups(t_rank);
 
   const auto& s_pickup = source.bwd_pickups(s_rank);

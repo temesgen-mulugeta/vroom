@@ -85,6 +85,49 @@ void UnassignedExchange::compute_gain() {
 }
 
 bool UnassignedExchange::is_valid() {
+  // Check if removing job would break a relation sequence
+  if (s_rank > 0 && _sol_state.relation_next_job[s_vehicle][s_rank - 1].has_value()) {
+    const Index required_next =
+      _sol_state.relation_next_job[s_vehicle][s_rank - 1].value();
+    if (required_next == s_route[s_rank]) {
+      return false;
+    }
+  }
+
+  if (s_rank < s_route.size() - 1) {
+    if (_sol_state.relation_next_job[s_vehicle][s_rank].has_value()) {
+      const Index required_next =
+        _sol_state.relation_next_job[s_vehicle][s_rank].value();
+      if (required_next == s_route[s_rank + 1]) {
+        return false;
+      }
+    }
+  }
+
+  // Check if removing job would break shipment atomicity
+  if (s_rank > 0 && s_rank < s_route.size() - 1) {
+    const auto& before_job = _input.jobs[s_route[s_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[s_rank + 1]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[s_rank - 1] + 1 == s_route[s_rank + 1]) {
+      return false;
+    }
+  }
+
+  // Check if insertion would break shipment atomicity
+  if (t_rank > 0 && t_rank < s_route.size()) {
+    const auto& before_job = _input.jobs[s_route[t_rank - 1]];
+    const auto& after_job = _input.jobs[s_route[t_rank]];
+
+    if (before_job.type == JOB_TYPE::PICKUP &&
+        after_job.type == JOB_TYPE::DELIVERY &&
+        s_route[t_rank - 1] + 1 == s_route[t_rank]) {
+      return false;
+    }
+  }
+
   auto pickup = source.pickup_in_range(_first_rank, _last_rank);
   assert(_input.jobs[_removed].pickup <= pickup);
   pickup -= _input.jobs[_removed].pickup;

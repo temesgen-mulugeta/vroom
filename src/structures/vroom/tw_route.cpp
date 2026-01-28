@@ -1444,6 +1444,230 @@ void TWRoute::replace(const Input& input,
   }
 }
 
+// Constraint validation methods
+
+bool TWRoute::is_valid_for_relation(const Input& input,
+                                    Index position) const {
+  if (position >= route.size()) {
+    return true;
+  }
+
+  const Index current_rank = route[position];
+
+  // Check if this is a pickup in a relation
+  if (input.job_rank_to_relation.contains(current_rank)) {
+    Index rel_idx = input.job_rank_to_relation.at(current_rank);
+    Index pos_in_rel = input.job_rank_to_relation_position.at(current_rank);
+    const auto& relation = input.relations[rel_idx];
+
+    // If not last shipment in relation, check that next pickup follows the
+    // current delivery
+    if (pos_in_rel < relation.pickup_ranks.size() - 1) {
+      Index current_delivery_rank = relation.delivery_ranks[pos_in_rel];
+      Index next_pickup_rank = relation.pickup_ranks[pos_in_rel + 1];
+
+      // Find current delivery in route
+      bool found_delivery = false;
+      Index delivery_pos = position;
+      for (Index i = position; i < route.size(); ++i) {
+        if (route[i] == current_delivery_rank) {
+          delivery_pos = i;
+          found_delivery = true;
+          break;
+        }
+      }
+
+      if (!found_delivery) {
+        return false;  // Delivery not found after pickup
+      }
+
+      // Check if next pickup immediately follows delivery
+      if (delivery_pos + 1 >= route.size() ||
+          route[delivery_pos + 1] != next_pickup_rank) {
+        return false;  // Gap between delivery and next pickup
+      }
+    }
+  }
+
+  // Check if this is a delivery in a relation
+  if (input.delivery_rank_to_relation.contains(current_rank)) {
+    Index rel_idx = input.delivery_rank_to_relation.at(current_rank);
+    Index delivery_idx = 0;
+    const auto& relation = input.relations[rel_idx];
+
+    // Find which delivery this is in the relation
+    for (Index i = 0; i < relation.delivery_ranks.size(); ++i) {
+      if (relation.delivery_ranks[i] == current_rank) {
+        delivery_idx = i;
+        break;
+      }
+    }
+
+    // Check that corresponding pickup comes before this delivery
+    Index pickup_rank = relation.pickup_ranks[delivery_idx];
+    bool found_pickup = false;
+    for (Index i = 0; i < position; ++i) {
+      if (route[i] == pickup_rank) {
+        found_pickup = true;
+        break;
+      }
+    }
+
+    if (!found_pickup) {
+      return false;  // Pickup not found before delivery
+    }
+  }
+
+  return true;
+}
+
+bool TWRoute::is_valid_relation_insertion(const Input& input,
+                                          Index job_rank,
+                                          Index position) const {
+  // Check if inserting job_rank at position would break any relation sequences
+
+  // If the job being inserted is part of a relation, more complex validation
+  // needed
+  if (input.job_rank_to_relation.contains(job_rank) ||
+      input.delivery_rank_to_relation.contains(job_rank)) {
+    // Simplified check: relations should be inserted as complete blocks
+    return false;
+  }
+
+  // Check if insertion would break an existing relation sequence
+  if (position > 0 && position < route.size()) {
+    Index before_job = route[position - 1];
+    Index after_job = route[position];
+
+    // Check if before and after are part of same relation and should be
+    // adjacent
+    if (input.job_rank_to_relation.contains(before_job)) {
+      Index rel_idx = input.job_rank_to_relation.at(before_job);
+      Index pos_in_rel = input.job_rank_to_relation_position.at(before_job);
+      const auto& relation = input.relations[rel_idx];
+
+      Index delivery_rank = relation.delivery_ranks[pos_in_rel];
+
+      // If after_job is the delivery for before_job, don't interrupt
+      if (after_job == delivery_rank) {
+        return false;  // Would interrupt pickup -> delivery
+      }
+
+      // If after_job is the next pickup in sequence, don't interrupt
+      if (pos_in_rel < relation.pickup_ranks.size() - 1) {
+        Index next_pickup_rank = relation.pickup_ranks[pos_in_rel + 1];
+        if (after_job == next_pickup_rank && before_job == delivery_rank) {
+          return false;  // Would interrupt delivery -> next pickup
+        }
+      }
+    }
+
+    // Check if before_job is a delivery and after_job is next pickup in
+    // relation
+    if (input.delivery_rank_to_relation.contains(before_job)) {
+      Index rel_idx = input.delivery_rank_to_relation.at(before_job);
+      const auto& relation = input.relations[rel_idx];
+
+      // Find position of this delivery
+      for (Index i = 0; i < relation.delivery_ranks.size() - 1; ++i) {
+        if (relation.delivery_ranks[i] == before_job) {
+          Index next_pickup = relation.pickup_ranks[i + 1];
+          if (after_job == next_pickup) {
+            return false;  // Would interrupt delivery -> next pickup in sequence
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+bool TWRoute::is_valid_step_sequence(const Input& input) const {
+  // Check if vehicle steps maintain their required order
+  const auto& vehicle = input.vehicles[v_rank];
+
+  if (vehicle.steps.empty()) {
+    return true;  // No steps to validate
+  }
+
+  // Build list of fixed jobs in current route
+  std::vector<Index> fixed_jobs_in_route;
+  for (Index rank : route) {
+    if (input.fixed_job_ranks.contains(rank)) {
+      fixed_jobs_in_route.push_back(rank);
+    }
+  }
+
+  // Build expected order from vehicle.steps
+  std::vector<Index> expected_order;
+  for (const auto& step : vehicle.steps) {
+    if (step.type == STEP_TYPE::JOB && step.job_type.has_value()) {
+      if (step.job_type.value() == JOB_TYPE::SINGLE) {
+        Index job_rank = input.job_id_to_rank.at(step.id);
+        expected_order.push_back(job_rank);
+      } else if (step.job_type.value() == JOB_TYPE::PICKUP) {
+        Index pickup_rank = input.pickup_id_to_rank.at(step.id);
+        expected_order.push_back(pickup_rank);
+      } else if (step.job_type.value() == JOB_TYPE::DELIVERY) {
+        Index delivery_rank = input.delivery_id_to_rank.at(step.id);
+        expected_order.push_back(delivery_rank);
+      }
+    }
+  }
+
+  // Compare fixed_jobs_in_route with expected_order
+  if (fixed_jobs_in_route.size() != expected_order.size()) {
+    return false;  // Missing some fixed jobs
+  }
+
+  for (size_t i = 0; i < fixed_jobs_in_route.size(); ++i) {
+    if (fixed_jobs_in_route[i] != expected_order[i]) {
+      return false;  // Order mismatch
+    }
+  }
+
+  return true;
+}
+
+bool TWRoute::is_valid_shipment_atomicity(const Input& input) const {
+  // Check that no jobs are inserted between any shipment's pickup and delivery
+
+  for (Index i = 0; i < route.size(); ++i) {
+    const auto& job = input.jobs[route[i]];
+
+    if (job.type == JOB_TYPE::PICKUP) {
+      // Find the matching delivery
+      Index pickup_rank = route[i];
+      Index delivery_rank = pickup_rank + 1;  // Deliveries follow pickups in
+                                              // job array
+
+      // Find delivery position in route
+      bool found = false;
+      Index delivery_pos = i;
+      for (Index j = i + 1; j < route.size(); ++j) {
+        if (route[j] == delivery_rank) {
+          delivery_pos = j;
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        return false;  // Delivery not found
+      }
+
+      // Check if delivery immediately follows pickup
+      if (delivery_pos != i + 1) {
+        return false;  // Jobs between pickup and delivery - atomicity violated
+      }
+    }
+  }
+
+  return true;
+}
+
 template bool
 TWRoute::is_valid_addition_for_tw(const Input& input,
                                   const Amount& delivery,
