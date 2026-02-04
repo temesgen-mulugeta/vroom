@@ -11,7 +11,9 @@ All rights reserved (see LICENSE).
 
 namespace vroom {
 
-Summary::Summary() : routes(0), unassigned(0) {
+Summary::Summary() : routes(0), unassigned(0), delivery(), pickup() {
+  // Note: delivery and pickup are explicitly default-constructed (0-dimensional)
+  // This constructor should only be used when proper initialization will follow
 }
 
 Summary::Summary(unsigned routes,

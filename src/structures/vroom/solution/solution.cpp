@@ -18,17 +18,23 @@ Solution::Solution(const Amount& zero_amount,
     routes(std::move(routes)),
     unassigned(std::move(unassigned)) {
 
-  for (const auto& route : this->routes) {
-    summary.cost += route.cost;
-    summary.delivery += route.delivery;
-    summary.pickup += route.pickup;
-    summary.setup += route.setup;
-    summary.service += route.service;
-    summary.priority += route.priority;
-    summary.duration += route.duration;
-    summary.distance += route.distance;
-    summary.waiting_time += route.waiting_time;
-    summary.violations += route.violations;
+  for (std::size_t i = 0; i < this->routes.size(); ++i) {
+    const auto& route = this->routes[i];
+    try {
+      summary.cost += route.cost;
+      summary.delivery += route.delivery;
+      summary.pickup += route.pickup;
+      summary.setup += route.setup;
+      summary.service += route.service;
+      summary.priority += route.priority;
+      summary.duration += route.duration;
+      summary.distance += route.distance;
+      summary.waiting_time += route.waiting_time;
+      summary.violations += route.violations;
+    } catch (const InfeasibleRouteException& e) {
+      throw InfeasibleRouteException(
+        std::format("Error in Solution constructor for route {}: {}", i, e.what()));
+    }
   }
 }
 

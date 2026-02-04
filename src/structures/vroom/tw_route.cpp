@@ -22,8 +22,10 @@ TWRoute::TWRoute(const Input& input, Index v, unsigned amount_size)
     breaks_counts({static_cast<unsigned>(input.vehicles[v].breaks.size())}),
     break_earliest(input.vehicles[v].breaks.size()),
     break_latest(input.vehicles[v].breaks.size()),
-    fwd_smallest_breaks_load_margin(input.vehicles[v].breaks.size()),
-    bwd_smallest_breaks_load_margin(input.vehicles[v].breaks.size()) {
+    fwd_smallest_breaks_load_margin(input.vehicles[v].breaks.size(),
+                                     utils::max_amount(amount_size)),
+    bwd_smallest_breaks_load_margin(input.vehicles[v].breaks.size(),
+                                     utils::max_amount(amount_size)) {
   const std::string break_error =
     std::format("Inconsistent breaks for vehicle {}.", input.vehicles[v].id);
 
@@ -162,7 +164,11 @@ void TWRoute::fwd_update_earliest_from(const Input& input, Index rank) {
       const auto b_tw = std::ranges::find_if(b.tws, [&](const auto& tw) {
         return current_earliest <= tw.end;
       });
-      assert(b_tw != b.tws.end());
+      if (b_tw == b.tws.end()) {
+        throw InfeasibleRouteException(
+          "Break cannot be scheduled within any time window (earliest: " +
+          std::to_string(current_earliest) + ")");
+      }
 
       if (current_earliest < b_tw->start) {
         if (const auto margin = b_tw->start - current_earliest;
@@ -185,14 +191,23 @@ void TWRoute::fwd_update_earliest_from(const Input& input, Index rank) {
     const auto j_tw = std::ranges::find_if(next_j.tws, [&](const auto& tw) {
       return current_earliest <= tw.end;
     });
-    assert(j_tw != next_j.tws.end());
+    if (j_tw == next_j.tws.end()) {
+      throw InfeasibleRouteException(
+        "Job cannot be reached within any time window (earliest: " +
+        std::to_string(current_earliest) + ")");
+    }
 
     current_earliest = std::max(current_earliest, j_tw->start);
 
     // Check consistency except for situation where latest date has
     // been reset to 0 to force backward propagation after this call
     // to fwd_update_earliest_from.
-    assert(current_earliest <= latest[i] || (i == rank + 1 && latest[i] == 0));
+    if (!(current_earliest <= latest[i] || (i == rank + 1 && latest[i] == 0))) {
+      throw InfeasibleRouteException(
+        "Forward time propagation: earliest (" +
+        std::to_string(current_earliest) + ") exceeds latest (" +
+        std::to_string(latest[i]) + ") at position " + std::to_string(i));
+    }
     if (current_earliest == earliest[i]) {
       // There won't be any further update so stop earliest date
       // propagation.
@@ -224,7 +239,11 @@ void TWRoute::fwd_update_earliest_from(const Input& input, Index rank) {
       const auto b_tw = std::ranges::find_if(b.tws, [&](const auto& tw) {
         return current_earliest <= tw.end;
       });
-      assert(b_tw != b.tws.end());
+      if (b_tw == b.tws.end()) {
+        throw InfeasibleRouteException(
+          "Break cannot be scheduled within any time window (earliest: " +
+          std::to_string(current_earliest) + ")");
+      }
 
       if (current_earliest < b_tw->start) {
         if (const auto margin = b_tw->start - current_earliest;
@@ -243,7 +262,12 @@ void TWRoute::fwd_update_earliest_from(const Input& input, Index rank) {
 
     earliest_end =
       current_earliest + previous_action_time + remaining_travel_time;
-    assert(earliest_end <= v_end);
+    if (earliest_end > v_end) {
+      throw InfeasibleRouteException(
+        "Cannot complete route: earliest end time (" +
+        std::to_string(earliest_end) + ") exceeds vehicle end time (" +
+        std::to_string(v_end) + ")");
+    }
   }
 }
 
@@ -266,14 +290,22 @@ void TWRoute::bwd_update_latest_from(const Input& input, Index rank) {
       --break_rank;
 
       const auto& b = v.breaks[break_rank];
-      assert(b.service <= current_latest);
+      if (b.service > current_latest) {
+        throw InfeasibleRouteException(
+          "Break service time (" + std::to_string(b.service) +
+          ") exceeds available time (" + std::to_string(current_latest) + ")");
+      }
       current_latest -= b.service;
 
       const auto b_tw =
         std::find_if(b.tws.rbegin(), b.tws.rend(), [&](const auto& tw) {
           return tw.start <= current_latest;
         });
-      assert(b_tw != b.tws.rend());
+      if (b_tw == b.tws.rend()) {
+        throw InfeasibleRouteException(
+          "Break cannot be scheduled within any time window (latest: " +
+          std::to_string(current_latest) + ")");
+      }
 
       if (b_tw->end < current_latest) {
         if (const auto margin = current_latest - b_tw->end;
@@ -291,18 +323,32 @@ void TWRoute::bwd_update_latest_from(const Input& input, Index rank) {
 
     // Back to the job after breaks.
     auto gap = action_time[next_i - 1] + remaining_travel_time;
-    assert(gap <= current_latest);
+    if (gap > current_latest) {
+      throw InfeasibleRouteException(
+        "Job gap time (" + std::to_string(gap) +
+        ") exceeds available time (" + std::to_string(current_latest) + ")");
+    }
     current_latest -= gap;
 
     const auto j_tw =
       std::find_if(previous_j.tws.rbegin(),
                    previous_j.tws.rend(),
                    [&](const auto& tw) { return tw.start <= current_latest; });
-    assert(j_tw != previous_j.tws.rend());
+    if (j_tw == previous_j.tws.rend()) {
+      throw InfeasibleRouteException(
+        "Job cannot be reached within any time window (latest: " +
+        std::to_string(current_latest) + ")");
+    }
 
     current_latest = std::min(current_latest, j_tw->end);
 
-    assert(earliest[next_i - 1] <= current_latest);
+    if (earliest[next_i - 1] > current_latest) {
+      throw InfeasibleRouteException(
+        "Time window infeasibility: earliest arrival (" +
+        std::to_string(earliest[next_i - 1]) +
+        ") exceeds latest allowed time (" +
+        std::to_string(current_latest) + ")");
+    }
     if (current_latest == latest[next_i - 1]) {
       // There won't be any further update so stop latest date
       // propagation.
@@ -325,14 +371,22 @@ void TWRoute::bwd_update_latest_from(const Input& input, Index rank) {
       --break_rank;
       const auto& b = v.breaks[break_rank];
 
-      assert(b.service <= current_latest);
+      if (b.service > current_latest) {
+        throw InfeasibleRouteException(
+          "Break service time (" + std::to_string(b.service) +
+          ") exceeds available time (" + std::to_string(current_latest) + ")");
+      }
       current_latest -= b.service;
 
       const auto b_tw =
         std::find_if(b.tws.rbegin(), b.tws.rend(), [&](const auto& tw) {
           return tw.start <= current_latest;
         });
-      assert(b_tw != b.tws.rend());
+      if (b_tw == b.tws.rend()) {
+        throw InfeasibleRouteException(
+          "Break cannot be scheduled within any time window (latest: " +
+          std::to_string(current_latest) + ")");
+      }
       if (b_tw->end < current_latest) {
         current_latest = b_tw->end;
       }
@@ -343,7 +397,10 @@ void TWRoute::bwd_update_latest_from(const Input& input, Index rank) {
 }
 
 void TWRoute::update_last_latest_date(const Input& input) {
-  assert(!route.empty());
+  if (route.empty()) {
+    throw InfeasibleRouteException(
+      "Cannot update break margins for empty route");
+  }
 
   const auto& v = input.vehicles[v_rank];
   auto next = next_info(input, route.back(), route.size());
@@ -354,14 +411,22 @@ void TWRoute::update_last_latest_date(const Input& input) {
     --break_rank;
     const auto& b = v.breaks[break_rank];
 
-    assert(b.service <= next.latest);
+    if (b.service > next.latest) {
+      throw InfeasibleRouteException(
+        "Break service time (" + std::to_string(b.service) +
+        ") exceeds latest time (" + std::to_string(next.latest) + ")");
+    }
     next.latest -= b.service;
 
     const auto b_tw =
       std::find_if(b.tws.rbegin(), b.tws.rend(), [&](const auto& tw) {
         return tw.start <= next.latest;
       });
-    assert(b_tw != b.tws.rend());
+    if (b_tw == b.tws.rend()) {
+      throw InfeasibleRouteException(
+        "Break cannot be scheduled within any time window (latest: " +
+        std::to_string(next.latest) + ")");
+    }
 
     if (b_tw->end < next.latest) {
       if (const auto margin = next.latest - b_tw->end; margin < next.travel) {
@@ -379,14 +444,22 @@ void TWRoute::update_last_latest_date(const Input& input) {
   // Latest date for last job.
   const auto& j = input.jobs[route.back()];
   const auto gap = action_time.back() + next.travel;
-  assert(gap <= next.latest);
+  if (gap > next.latest) {
+    throw InfeasibleRouteException(
+      "Job gap time (" + std::to_string(gap) +
+      ") exceeds latest time (" + std::to_string(next.latest) + ")");
+  }
   next.latest -= gap;
 
   const auto j_tw =
     std::find_if(j.tws.rbegin(), j.tws.rend(), [&](const auto& tw) {
       return tw.start <= next.latest;
     });
-  assert(j_tw != j.tws.rend());
+  if (j_tw == j.tws.rend()) {
+    throw InfeasibleRouteException(
+      "Job cannot be reached within any time window (latest: " +
+      std::to_string(next.latest) + ")");
+  }
 
   latest.back() = std::min(next.latest, j_tw->end);
 }
@@ -428,7 +501,11 @@ void TWRoute::fwd_update_breaks_load_margin_from(const Input& input,
            ++break_rank) {
         const auto& b = v.breaks[break_rank];
 
-        assert(b.is_valid_for_load(current_load));
+        if (!b.is_valid_for_load(current_load)) {
+          throw InfeasibleRouteException(
+            "Break load constraint violated at break " +
+            std::to_string(break_rank));
+        }
         auto current_margin = (b.max_load.has_value())
                                 ? b.max_load.value() - current_load
                                 : utils::max_amount(input.get_amount_size());
@@ -437,7 +514,10 @@ void TWRoute::fwd_update_breaks_load_margin_from(const Input& input,
           fwd_smallest[a] = std::min(fwd_smallest[a], current_margin[a]);
         }
 
-        assert(input.zero_amount() <= fwd_smallest);
+        if (!(input.zero_amount() <= fwd_smallest)) {
+          throw InfeasibleRouteException(
+            "Forward smallest load margin became negative");
+        }
         fwd_smallest_breaks_load_margin[break_rank] = fwd_smallest;
       }
     }
@@ -464,7 +544,11 @@ void TWRoute::bwd_update_breaks_load_margin_from(const Input& input,
         const auto break_rank = breaks_counts[i] - 1 - bwd_break_count;
         const auto& b = v.breaks[break_rank];
 
-        assert(b.is_valid_for_load(current_load));
+        if (!b.is_valid_for_load(current_load)) {
+          throw InfeasibleRouteException(
+            "Break load constraint violated at break " +
+            std::to_string(break_rank));
+        }
         auto current_margin = (b.max_load.has_value())
                                 ? b.max_load.value() - current_load
                                 : utils::max_amount(input.get_amount_size());
@@ -473,7 +557,10 @@ void TWRoute::bwd_update_breaks_load_margin_from(const Input& input,
           bwd_smallest[a] = std::min(bwd_smallest[a], current_margin[a]);
         }
 
-        assert(input.zero_amount() <= bwd_smallest);
+        if (!(input.zero_amount() <= bwd_smallest)) {
+          throw InfeasibleRouteException(
+            "Backward smallest load margin became negative");
+        }
         bwd_smallest_breaks_load_margin[break_rank] = bwd_smallest;
       }
     }
@@ -1152,7 +1239,11 @@ void TWRoute::replace(const Input& input,
       const auto b_tw = std::ranges::find_if(b.tws, [&](const auto& tw) {
         return current.earliest <= tw.end;
       });
-      assert(b_tw != b.tws.end());
+      if (b_tw == b.tws.end()) {
+        throw InfeasibleRouteException(
+          "Break cannot be scheduled within any time window (earliest: " +
+          std::to_string(current.earliest) + ")");
+      }
 
       if (current.earliest < b_tw->start) {
         if (const auto margin = b_tw->start - current.earliest;
@@ -1200,7 +1291,11 @@ void TWRoute::replace(const Input& input,
       const auto j_tw = std::ranges::find_if(j.tws, [&](const auto& tw) {
         return current.earliest <= tw.end;
       });
-      assert(j_tw != j.tws.end());
+      if (j_tw == j.tws.end()) {
+        throw InfeasibleRouteException(
+          "Job cannot be reached within any time window (earliest: " +
+          std::to_string(current.earliest) + ")");
+      }
 
       current.earliest = std::max(current.earliest, j_tw->start);
 
@@ -1401,7 +1496,11 @@ void TWRoute::replace(const Input& input,
         const auto j_tw = std::ranges::find_if(j.tws, [&](const auto& tw) {
           return current.earliest <= tw.end;
         });
-        assert(j_tw != j.tws.end());
+        if (j_tw == j.tws.end()) {
+          throw InfeasibleRouteException(
+            "Job cannot be reached within any time window (earliest: " +
+            std::to_string(current.earliest) + ")");
+        }
 
         earliest[0] = std::max(current.earliest, j_tw->start);
         assert(earliest[0] <= latest[0] ||

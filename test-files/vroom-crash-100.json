@@ -1,0 +1,4774 @@
+{
+  "vehicles": [
+    {
+      "id": 0,
+      "description": "ABRAHAM 2 - Stretcher Van #2",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        6,
+        1,
+        1
+      ],
+      "time_window": [
+        1770202800,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      }
+    },
+    {
+      "id": 1,
+      "description": "ADDIS 3 - Sedan #3",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        4,
+        0,
+        0
+      ],
+      "time_window": [
+        1770202800,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      },
+      "steps": [
+        {
+          "type": "start"
+        },
+        {
+          "type": "job",
+          "id": 10000
+        },
+        {
+          "type": "job",
+          "id": 10001
+        },
+        {
+          "type": "job",
+          "id": 10002
+        },
+        {
+          "type": "job",
+          "id": 10003
+        },
+        {
+          "type": "job",
+          "id": 10004
+        },
+        {
+          "type": "job",
+          "id": 10005
+        },
+        {
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "description": "AHMED 4 - Suv #4",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        7,
+        0,
+        0
+      ],
+      "time_window": [
+        1770201000,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      }
+    },
+    {
+      "id": 3,
+      "description": "ALI 5 - Minivan #5",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        7,
+        0,
+        0
+      ],
+      "time_window": [
+        1770210000,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      }
+    },
+    {
+      "id": 4,
+      "description": "AMSALU 6 - Bariatric Van #6",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        4,
+        1,
+        1
+      ],
+      "time_window": [
+        1770199200,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      },
+      "steps": [
+        {
+          "type": "start"
+        },
+        {
+          "type": "job",
+          "id": 10006
+        },
+        {
+          "type": "job",
+          "id": 10007
+        },
+        {
+          "type": "job",
+          "id": 10008
+        },
+        {
+          "type": "job",
+          "id": 10009
+        },
+        {
+          "type": "end"
+        }
+      ]
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 0,
+        "description": "TR-01-2953 - LISA A ARTIS (pickup)",
+        "location": [
+          -104.8744228,
+          39.7340947
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228900,
+            1770229080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 0,
+        "description": "TR-01-2953 - LISA A ARTIS (dropoff)",
+        "location": [
+          -104.8945845,
+          39.6949695
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 1,
+        "description": "TR-01-2954 - MICHAEL J LYONS (pickup)",
+        "location": [
+          -104.8750157,
+          39.6693345
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770237000,
+            1770237180
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 1,
+        "description": "TR-01-2954 - MICHAEL J LYONS (dropoff)",
+        "location": [
+          -104.9040081,
+          39.7175118
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 2,
+        "description": "TR-01-2955 - MICHAEL J LYONS (pickup)",
+        "location": [
+          -104.9040081,
+          39.7175118
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770242400,
+            1770242580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 2,
+        "description": "TR-01-2955 - MICHAEL J LYONS (dropoff)",
+        "location": [
+          -104.8750157,
+          39.6693345
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 3,
+        "description": "TR-01-2956 - GWENDOLYN W JOHNSON (pickup)",
+        "location": [
+          -104.8828796,
+          39.7042473
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770214020,
+            1770214200
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 3,
+        "description": "TR-01-2956 - GWENDOLYN W JOHNSON (dropoff)",
+        "location": [
+          -104.8440836,
+          39.7426948
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 4,
+        "description": "TR-01-2957 - KATHLEEN HUMPHREYS (pickup)",
+        "location": [
+          -104.981449,
+          39.74105429999999
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770219360,
+            1770219540
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 4,
+        "description": "TR-01-2957 - KATHLEEN HUMPHREYS (dropoff)",
+        "location": [
+          -104.9744302,
+          39.7463237
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 5,
+        "description": "TR-01-2958 - KATHLEEN HUMPHREYS (pickup)",
+        "location": [
+          -104.9744302,
+          39.7463237
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770227100,
+            1770227280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 5,
+        "description": "TR-01-2958 - KATHLEEN HUMPHREYS (dropoff)",
+        "location": [
+          -104.981449,
+          39.74105429999999
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 6,
+        "description": "TR-01-2959 - AMANDA D KNIGHT (pickup)",
+        "location": [
+          -104.9788774,
+          39.743782
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770221100,
+            1770221280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 6,
+        "description": "TR-01-2959 - AMANDA D KNIGHT (dropoff)",
+        "location": [
+          -104.8945845,
+          39.6949695
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 7,
+        "description": "TR-01-2960 - AMANDA D KNIGHT (pickup)",
+        "location": [
+          -104.8945845,
+          39.6949695
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228300,
+            1770228480
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 7,
+        "description": "TR-01-2960 - AMANDA D KNIGHT (dropoff)",
+        "location": [
+          -104.9788774,
+          39.743782
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 8,
+        "description": "TR-01-2961 - TIMOTHY STRAH (pickup)",
+        "location": [
+          -104.9421708,
+          39.7393692
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770237900,
+            1770238080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 8,
+        "description": "TR-01-2961 - TIMOTHY STRAH (dropoff)",
+        "location": [
+          -104.9844938,
+          39.7363756
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 9,
+        "description": "TR-01-2962 - KENDRA MATRICIAN (pickup)",
+        "location": [
+          -104.9892235,
+          39.7444882
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770222300,
+            1770222480
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 9,
+        "description": "TR-01-2962 - KENDRA MATRICIAN (dropoff)",
+        "location": [
+          -104.9356465,
+          39.7349371
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 10,
+        "description": "TR-01-2963 - KENDRA MATRICIAN (pickup)",
+        "location": [
+          -104.9356465,
+          39.7349371
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228900,
+            1770229080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 10,
+        "description": "TR-01-2963 - KENDRA MATRICIAN (dropoff)",
+        "location": [
+          -104.9892235,
+          39.7444882
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 11,
+        "description": "TR-01-2964 - LANAYA MIMS (pickup)",
+        "location": [
+          -104.9030855,
+          39.6543164
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770229740,
+            1770229920
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 11,
+        "description": "TR-01-2964 - LANAYA MIMS (dropoff)",
+        "location": [
+          -104.9263034,
+          39.7073736
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 12,
+        "description": "TR-01-2965 - LANAYA MIMS (pickup)",
+        "location": [
+          -104.9263034,
+          39.7073736
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770236100,
+            1770236280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 12,
+        "description": "TR-01-2965 - LANAYA MIMS (dropoff)",
+        "location": [
+          -104.9030855,
+          39.6543164
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 13,
+        "description": "TR-01-2966 - KRISTEN M HARDING (pickup)",
+        "location": [
+          -105.1211217,
+          39.7712264
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770219060,
+            1770219240
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 13,
+        "description": "TR-01-2966 - KRISTEN M HARDING (dropoff)",
+        "location": [
+          -105.0951081,
+          39.7399092
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 14,
+        "description": "TR-01-2967 - KRISTEN M HARDING (pickup)",
+        "location": [
+          -105.0951081,
+          39.7399092
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770224400,
+            1770224580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 14,
+        "description": "TR-01-2967 - KRISTEN M HARDING (dropoff)",
+        "location": [
+          -105.1211217,
+          39.7712264
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 15,
+        "description": "TR-01-2968 - BILLY L LIPTROT (pickup)",
+        "location": [
+          -104.9779079,
+          39.7338714
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220800,
+            1770220980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 15,
+        "description": "TR-01-2968 - BILLY L LIPTROT (dropoff)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 16,
+        "description": "TR-01-2969 - BILLY L LIPTROT (pickup)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770223200,
+            1770223380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 16,
+        "description": "TR-01-2969 - BILLY L LIPTROT (dropoff)",
+        "location": [
+          -104.9779079,
+          39.7338714
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 17,
+        "description": "TR-01-2970 - SPENCER S BURKHARDT (pickup)",
+        "location": [
+          -104.9789527,
+          39.7115172
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770210120,
+            1770210300
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 17,
+        "description": "TR-01-2970 - SPENCER S BURKHARDT (dropoff)",
+        "location": [
+          -104.8848653,
+          39.58490030000001
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 18,
+        "description": "TR-01-2971 - SPENCER S BURKHARDT (pickup)",
+        "location": [
+          -104.8848653,
+          39.58490030000001
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770212640,
+            1770212820
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 18,
+        "description": "TR-01-2971 - SPENCER S BURKHARDT (dropoff)",
+        "location": [
+          -104.9789527,
+          39.7115172
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 19,
+        "description": "TR-01-2972 - MITCHELL D BURKHARDT (pickup)",
+        "location": [
+          -104.9789527,
+          39.7115172
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770210120,
+            1770210300
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 19,
+        "description": "TR-01-2972 - MITCHELL D BURKHARDT (dropoff)",
+        "location": [
+          -104.8848653,
+          39.58490030000001
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 20,
+        "description": "TR-01-2973 - MITCHELL D BURKHARDT (pickup)",
+        "location": [
+          -104.8848653,
+          39.58490030000001
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770212640,
+            1770212820
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 20,
+        "description": "TR-01-2973 - MITCHELL D BURKHARDT (dropoff)",
+        "location": [
+          -104.9789527,
+          39.7115172
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 21,
+        "description": "TR-01-2974 - MICHELLE L DOZIER (pickup)",
+        "location": [
+          -104.8203597,
+          39.6393817
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220800,
+            1770220980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 21,
+        "description": "TR-01-2974 - MICHELLE L DOZIER (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 22,
+        "description": "TR-01-2975 - MICHELLE L DOZIER (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770222660,
+            1770222840
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 22,
+        "description": "TR-01-2975 - MICHELLE L DOZIER (dropoff)",
+        "location": [
+          -104.8203597,
+          39.6393817
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 23,
+        "description": "TR-01-2976 - MARTHA ZUNIGA (pickup)",
+        "location": [
+          -104.769619,
+          39.6422643
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770211200,
+            1770211380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 23,
+        "description": "TR-01-2976 - MARTHA ZUNIGA (dropoff)",
+        "location": [
+          -104.8274912,
+          39.7287571
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 24,
+        "description": "TR-01-2977 - MARTHA ZUNIGA (pickup)",
+        "location": [
+          -104.8274912,
+          39.7287571
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770213420,
+            1770213600
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 24,
+        "description": "TR-01-2977 - MARTHA ZUNIGA (dropoff)",
+        "location": [
+          -104.769619,
+          39.6422643
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 25,
+        "description": "TR-01-2978 - JEFFREY B ABARCA (pickup)",
+        "location": [
+          -104.9064872,
+          39.8258457
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770216180,
+            1770216360
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 25,
+        "description": "TR-01-2978 - JEFFREY B ABARCA (dropoff)",
+        "location": [
+          -105.0800362,
+          39.6961454
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 26,
+        "description": "TR-01-2979 - JEFFREY B ABARCA (pickup)",
+        "location": [
+          -105.0800362,
+          39.6961454
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770230700,
+            1770230880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 26,
+        "description": "TR-01-2979 - JEFFREY B ABARCA (dropoff)",
+        "location": [
+          -104.9064872,
+          39.8258457
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 27,
+        "description": "TR-01-2980 - JILLIAN ANSPAUGH (pickup)",
+        "location": [
+          -105.0674089,
+          39.6159953
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770217440,
+            1770217620
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 27,
+        "description": "TR-01-2980 - JILLIAN ANSPAUGH (dropoff)",
+        "location": [
+          -104.976121,
+          39.768702
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 28,
+        "description": "TR-01-2981 - JILLIAN ANSPAUGH (pickup)",
+        "location": [
+          -104.976121,
+          39.768702
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770243300,
+            1770243480
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 28,
+        "description": "TR-01-2981 - JILLIAN ANSPAUGH (dropoff)",
+        "location": [
+          -105.0674089,
+          39.6159953
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 29,
+        "description": "TR-01-2982 - MICHELLE MAES (pickup)",
+        "location": [
+          -104.9504826,
+          39.9034352
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770210420,
+            1770210600
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 29,
+        "description": "TR-01-2982 - MICHELLE MAES (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 30,
+        "description": "TR-01-2983 - MICHELLE MAES (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770214500,
+            1770214680
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 30,
+        "description": "TR-01-2983 - MICHELLE MAES (dropoff)",
+        "location": [
+          -104.9504826,
+          39.9034352
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 31,
+        "description": "TR-01-2984 - ERIN M HEAD (pickup)",
+        "location": [
+          -104.8123107,
+          39.69281
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220800,
+            1770220980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 31,
+        "description": "TR-01-2984 - ERIN M HEAD (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 32,
+        "description": "TR-01-2985 - ERIN M HEAD (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770222120,
+            1770222300
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 32,
+        "description": "TR-01-2985 - ERIN M HEAD (dropoff)",
+        "location": [
+          -104.8123107,
+          39.69281
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 33,
+        "description": "TR-01-2986 - PHILLIP VIGIL (pickup)",
+        "location": [
+          -104.7981909,
+          39.6741536
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220800,
+            1770220980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 33,
+        "description": "TR-01-2986 - PHILLIP VIGIL (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 34,
+        "description": "TR-01-2987 - PHILLIP VIGIL (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770222420,
+            1770222600
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 34,
+        "description": "TR-01-2987 - PHILLIP VIGIL (dropoff)",
+        "location": [
+          -104.7981909,
+          39.6741536
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 35,
+        "description": "TR-01-2988 - SIMON T AZBITE (pickup)",
+        "location": [
+          -104.7501205,
+          39.6341403
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770225000,
+            1770225180
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 35,
+        "description": "TR-01-2988 - SIMON T AZBITE (dropoff)",
+        "location": [
+          -104.9002512,
+          39.7195979
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 36,
+        "description": "TR-01-2989 - SIMON T AZBITE (pickup)",
+        "location": [
+          -104.9002512,
+          39.7195979
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770244200,
+            1770244380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 36,
+        "description": "TR-01-2989 - SIMON T AZBITE (dropoff)",
+        "location": [
+          -104.7501205,
+          39.6341403
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 37,
+        "description": "TR-01-2990 - JOEL B SCHIMPF (pickup)",
+        "location": [
+          -104.736374,
+          39.7961027
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770206400,
+            1770206580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 37,
+        "description": "TR-01-2990 - JOEL B SCHIMPF (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 38,
+        "description": "TR-01-2991 - JOEL B SCHIMPF (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770208980,
+            1770209160
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 38,
+        "description": "TR-01-2991 - JOEL B SCHIMPF (dropoff)",
+        "location": [
+          -104.736374,
+          39.7961027
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 39,
+        "description": "TR-01-2992 - RASHAD A MAYES (pickup)",
+        "location": [
+          -104.9737735,
+          39.75780109999999
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770239820,
+            1770240000
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 39,
+        "description": "TR-01-2992 - RASHAD A MAYES (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 40,
+        "description": "TR-01-2993 - RASHAD A MAYES (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770243360,
+            1770243540
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 40,
+        "description": "TR-01-2993 - RASHAD A MAYES (dropoff)",
+        "location": [
+          -104.9737735,
+          39.75780109999999
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 41,
+        "description": "TR-01-2994 - ENRIQUE MORALES (pickup)",
+        "location": [
+          -105.0469885,
+          39.8579449
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770210180,
+            1770210360
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 41,
+        "description": "TR-01-2994 - ENRIQUE MORALES (dropoff)",
+        "location": [
+          -105.0523407,
+          39.8329486
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 42,
+        "description": "TR-01-2995 - ENRIQUE MORALES (pickup)",
+        "location": [
+          -105.0523407,
+          39.8329486
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770214500,
+            1770214680
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 42,
+        "description": "TR-01-2995 - ENRIQUE MORALES (dropoff)",
+        "location": [
+          -105.0469885,
+          39.8579449
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 43,
+        "description": "TR-01-2996 - ANGELLA M FINNEY (pickup)",
+        "location": [
+          -104.9923196,
+          39.6284673
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770212400,
+            1770212580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 43,
+        "description": "TR-01-2996 - ANGELLA M FINNEY (dropoff)",
+        "location": [
+          -104.9879914,
+          39.6506035
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 44,
+        "description": "TR-01-2997 - ANGELLA M FINNEY (pickup)",
+        "location": [
+          -104.9879914,
+          39.6506035
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770213660,
+            1770213840
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 44,
+        "description": "TR-01-2997 - ANGELLA M FINNEY (dropoff)",
+        "location": [
+          -104.9923196,
+          39.6284673
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 45,
+        "description": "TR-01-2998 - JESSICA ELLIOTT (pickup)",
+        "location": [
+          -104.9593819,
+          39.8499481
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770218700,
+            1770218880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 45,
+        "description": "TR-01-2998 - JESSICA ELLIOTT (dropoff)",
+        "location": [
+          -105.00582,
+          39.9191862
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 46,
+        "description": "TR-01-2999 - JESSICA ELLIOTT (pickup)",
+        "location": [
+          -105.00582,
+          39.9191862
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770232500,
+            1770232680
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 46,
+        "description": "TR-01-2999 - JESSICA ELLIOTT (dropoff)",
+        "location": [
+          -104.9593819,
+          39.8499481
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 47,
+        "description": "TR-01-3000 - JESUS M GONZALEZ (pickup)",
+        "location": [
+          -104.9935463,
+          39.85702010000001
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770230100,
+            1770230280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 47,
+        "description": "TR-01-3000 - JESUS M GONZALEZ (dropoff)",
+        "location": [
+          -105.0400655,
+          39.82928829999999
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 48,
+        "description": "TR-01-3001 - JESUS M GONZALEZ (pickup)",
+        "location": [
+          -105.0400655,
+          39.82928829999999
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770211740,
+            1770211920
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 48,
+        "description": "TR-01-3001 - JESUS M GONZALEZ (dropoff)",
+        "location": [
+          -104.9935463,
+          39.85702010000001
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 49,
+        "description": "TR-01-3002 - BARRETT A WILKINSON (pickup)",
+        "location": [
+          -104.81337,
+          39.6395808
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770206400,
+            1770206580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 49,
+        "description": "TR-01-3002 - BARRETT A WILKINSON (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 50,
+        "description": "TR-01-3003 - BARRETT A WILKINSON (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770208260,
+            1770208440
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 50,
+        "description": "TR-01-3003 - BARRETT A WILKINSON (dropoff)",
+        "location": [
+          -104.81337,
+          39.6395808
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 51,
+        "description": "TR-01-3004 - BRANDON R REIS (pickup)",
+        "location": [
+          -104.8590267,
+          39.669006
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770213600,
+            1770213780
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 51,
+        "description": "TR-01-3004 - BRANDON R REIS (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 52,
+        "description": "TR-01-3005 - BRANDON R REIS (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770215460,
+            1770215640
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 52,
+        "description": "TR-01-3005 - BRANDON R REIS (dropoff)",
+        "location": [
+          -104.8590267,
+          39.669006
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 53,
+        "description": "TR-01-3006 - AMANDA N VANACKEREN (pickup)",
+        "location": [
+          -104.7950052,
+          39.7286161
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770206700,
+            1770206880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 53,
+        "description": "TR-01-3006 - AMANDA N VANACKEREN (dropoff)",
+        "location": [
+          -104.827064,
+          39.7279183
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 54,
+        "description": "TR-01-3007 - AMANDA N VANACKEREN (pickup)",
+        "location": [
+          -104.827064,
+          39.7279183
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770210000,
+            1770210180
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 54,
+        "description": "TR-01-3007 - AMANDA N VANACKEREN (dropoff)",
+        "location": [
+          -104.7950052,
+          39.7286161
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 55,
+        "description": "TR-01-3008 - SHYANNE M DRAKE (pickup)",
+        "location": [
+          -104.9020963,
+          39.7736693
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770231660,
+            1770231840
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 55,
+        "description": "TR-01-3008 - SHYANNE M DRAKE (dropoff)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 56,
+        "description": "TR-01-3009 - CELESTE M ROMERO (pickup)",
+        "location": [
+          -104.9718297,
+          39.7407386
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770218880,
+            1770219060
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 56,
+        "description": "TR-01-3009 - CELESTE M ROMERO (dropoff)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 57,
+        "description": "TR-01-3010 - CELESTE M ROMERO (pickup)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770236100,
+            1770236280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 57,
+        "description": "TR-01-3010 - CELESTE M ROMERO (dropoff)",
+        "location": [
+          -104.9718297,
+          39.7407386
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 58,
+        "description": "TR-01-3011 - CHANISE CARDENAS (pickup)",
+        "location": [
+          -104.9820048,
+          39.7346346
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228000,
+            1770228180
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 58,
+        "description": "TR-01-3011 - CHANISE CARDENAS (dropoff)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 59,
+        "description": "TR-01-3012 - CHANISE CARDENAS (pickup)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770239700,
+            1770239880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 59,
+        "description": "TR-01-3012 - CHANISE CARDENAS (dropoff)",
+        "location": [
+          -104.9820048,
+          39.7346346
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 60,
+        "description": "TR-01-3013 - KATHERINE LARRANAGA (pickup)",
+        "location": [
+          -104.8503545,
+          39.7050145
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770211860,
+            1770212040
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 60,
+        "description": "TR-01-3013 - KATHERINE LARRANAGA (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 61,
+        "description": "TR-01-3014 - KATHERINE LARRANAGA (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770213480,
+            1770213660
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 61,
+        "description": "TR-01-3014 - KATHERINE LARRANAGA (dropoff)",
+        "location": [
+          -104.8503545,
+          39.7050145
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 62,
+        "description": "TR-01-3015 - CARLOS CARBAJAL (pickup)",
+        "location": [
+          -105.0278039,
+          39.7070766
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770246720,
+            1770246900
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 62,
+        "description": "TR-01-3015 - CARLOS CARBAJAL (dropoff)",
+        "location": [
+          -104.8274912,
+          39.7287571
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 63,
+        "description": "TR-01-3016 - CARLOS CARBAJAL (pickup)",
+        "location": [
+          -104.8274912,
+          39.7287571
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770254100,
+            1770254280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 63,
+        "description": "TR-01-3016 - CARLOS CARBAJAL (dropoff)",
+        "location": [
+          -105.0278039,
+          39.7070766
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 64,
+        "description": "TR-01-3017 - BLAKE H HALL (pickup)",
+        "location": [
+          -104.8617446,
+          39.68400279999999
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770206340,
+            1770206520
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 64,
+        "description": "TR-01-3017 - BLAKE H HALL (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 65,
+        "description": "TR-01-3018 - BLAKE H HALL (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770208140,
+            1770208320
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 65,
+        "description": "TR-01-3018 - BLAKE H HALL (dropoff)",
+        "location": [
+          -104.8617446,
+          39.68400279999999
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 66,
+        "description": "TR-01-3019 - LOUIE B MAGNUS (pickup)",
+        "location": [
+          -104.8411488,
+          39.7376779
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770251400,
+            1770251580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 66,
+        "description": "TR-01-3019 - LOUIE B MAGNUS (dropoff)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 67,
+        "description": "TR-01-3020 - LOUIE B MAGNUS (pickup)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770262200,
+            1770262380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 67,
+        "description": "TR-01-3020 - LOUIE B MAGNUS (dropoff)",
+        "location": [
+          -104.8411488,
+          39.7376779
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 68,
+        "description": "TR-01-3021 - SHANAI WADE (pickup)",
+        "location": [
+          -104.8736459,
+          39.7439766
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770226200,
+            1770226380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 68,
+        "description": "TR-01-3021 - SHANAI WADE (dropoff)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 69,
+        "description": "TR-01-3022 - SHANAI WADE (pickup)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770227460,
+            1770227640
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 69,
+        "description": "TR-01-3022 - SHANAI WADE (dropoff)",
+        "location": [
+          -104.8736459,
+          39.7439766
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 70,
+        "description": "TR-01-3023 - ALGER J SOTELO (pickup)",
+        "location": [
+          -104.9785815,
+          39.6559088
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770221340,
+            1770221520
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 70,
+        "description": "TR-01-3023 - ALGER J SOTELO (dropoff)",
+        "location": [
+          -104.990797,
+          39.62222440000001
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 71,
+        "description": "TR-01-3024 - ALGER J SOTELO (pickup)",
+        "location": [
+          -104.990797,
+          39.62222440000001
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770240600,
+            1770240780
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 71,
+        "description": "TR-01-3024 - ALGER J SOTELO (dropoff)",
+        "location": [
+          -104.9785815,
+          39.6559088
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 72,
+        "description": "TR-01-3025 - MAXCINE M GAGNIER (pickup)",
+        "location": [
+          -104.8054228,
+          39.8753104
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228360,
+            1770228540
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 72,
+        "description": "TR-01-3025 - MAXCINE M GAGNIER (dropoff)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 73,
+        "description": "TR-01-3026 - MAXCINE M GAGNIER (pickup)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770231540,
+            1770231720
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 73,
+        "description": "TR-01-3026 - MAXCINE M GAGNIER (dropoff)",
+        "location": [
+          -104.8054228,
+          39.8753104
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 74,
+        "description": "TR-01-3027 - MALLORY F CRENNEN (pickup)",
+        "location": [
+          -104.9991972,
+          39.6428629
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770218400,
+            1770218580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 74,
+        "description": "TR-01-3027 - MALLORY F CRENNEN (dropoff)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 75,
+        "description": "TR-01-3028 - MALLORY F CRENNEN (pickup)",
+        "location": [
+          -104.9921032,
+          39.7748036
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770232500,
+            1770232680
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 75,
+        "description": "TR-01-3028 - MALLORY F CRENNEN (dropoff)",
+        "location": [
+          -104.9991972,
+          39.6428629
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 76,
+        "description": "TR-01-3029 - OBED I HERNANDEZ JIMENEZ (pickup)",
+        "location": [
+          -104.7215465,
+          39.6225427
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770213600,
+            1770213780
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 76,
+        "description": "TR-01-3029 - OBED I HERNANDEZ JIMENEZ (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 77,
+        "description": "TR-01-3030 - OBED I HERNANDEZ JIMENEZ (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770216120,
+            1770216300
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 77,
+        "description": "TR-01-3030 - OBED I HERNANDEZ JIMENEZ (dropoff)",
+        "location": [
+          -104.7215465,
+          39.6225427
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 78,
+        "description": "TR-01-3031 - SEANTIARA F MAY (pickup)",
+        "location": [
+          -104.8170536,
+          39.7202127
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770246900,
+            1770247080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 78,
+        "description": "TR-01-3031 - SEANTIARA F MAY (dropoff)",
+        "location": [
+          -104.8600485,
+          39.7150609
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 79,
+        "description": "TR-01-3032 - BRITTANY L TICHOTA (pickup)",
+        "location": [
+          -104.8708668,
+          39.74767010000001
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770235200,
+            1770235380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 79,
+        "description": "TR-01-3032 - BRITTANY L TICHOTA (dropoff)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 80,
+        "description": "TR-01-3033 - BRITTANY L TICHOTA (pickup)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770236520,
+            1770236700
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 80,
+        "description": "TR-01-3033 - BRITTANY L TICHOTA (dropoff)",
+        "location": [
+          -104.8708668,
+          39.74767010000001
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 81,
+        "description": "TR-01-3034 - MARK A LONEHILL MARTINEZ (pickup)",
+        "location": [
+          -104.9020963,
+          39.7736693
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220800,
+            1770220980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 81,
+        "description": "TR-01-3034 - MARK A LONEHILL MARTINEZ (dropoff)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 82,
+        "description": "TR-01-3035 - MARK A LONEHILL MARTINEZ (pickup)",
+        "location": [
+          -104.8646621,
+          39.7313501
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770223020,
+            1770223200
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 82,
+        "description": "TR-01-3035 - MARK A LONEHILL MARTINEZ (dropoff)",
+        "location": [
+          -104.9020963,
+          39.7736693
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 83,
+        "description": "TR-01-3036 - ANGELICA C ROSAS (pickup)",
+        "location": [
+          -104.8849075,
+          39.6900623
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220800,
+            1770220980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 83,
+        "description": "TR-01-3036 - ANGELICA C ROSAS (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 84,
+        "description": "TR-01-3037 - ANGELICA C ROSAS (pickup)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770222780,
+            1770222960
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 84,
+        "description": "TR-01-3037 - ANGELICA C ROSAS (dropoff)",
+        "location": [
+          -104.8849075,
+          39.6900623
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 85,
+        "description": "TR-01-3038 - KATHERINE R KUHN (pickup)",
+        "location": [
+          -104.4401644,
+          39.7545991
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770217440,
+            1770217620
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 85,
+        "description": "TR-01-3038 - KATHERINE R KUHN (dropoff)",
+        "location": [
+          -104.8274912,
+          39.7287571
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 86,
+        "description": "TR-01-3039 - KATHERINE R KUHN (pickup)",
+        "location": [
+          -104.8274912,
+          39.7287571
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770220920,
+            1770221100
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 86,
+        "description": "TR-01-3039 - KATHERINE R KUHN (dropoff)",
+        "location": [
+          -104.4401644,
+          39.7545991
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 87,
+        "description": "TR-01-3040 - OLAYA GARCIA (pickup)",
+        "location": [
+          -105.0977123,
+          39.7154598
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770217320,
+            1770217500
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 87,
+        "description": "TR-01-3040 - OLAYA GARCIA (dropoff)",
+        "location": [
+          -105.0800362,
+          39.6961454
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 88,
+        "description": "TR-01-3041 - CRYSTAL WHITING (pickup)",
+        "location": [
+          -104.9826563,
+          39.7454306
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770230100,
+            1770230280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 88,
+        "description": "TR-01-3041 - CRYSTAL WHITING (dropoff)",
+        "location": [
+          -104.9263034,
+          39.7073736
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 89,
+        "description": "TR-01-3042 - CRYSTAL WHITING (pickup)",
+        "location": [
+          -104.9263034,
+          39.7073736
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770239700,
+            1770239880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 89,
+        "description": "TR-01-3042 - CRYSTAL WHITING (dropoff)",
+        "location": [
+          -104.9826563,
+          39.7454306
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 90,
+        "description": "TR-01-3043 - LYNN PAGE (pickup)",
+        "location": [
+          -104.8539277,
+          39.7361863
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770235260,
+            1770235440
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 90,
+        "description": "TR-01-3043 - LYNN PAGE (dropoff)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 91,
+        "description": "TR-01-3044 - LYNN PAGE (pickup)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770248700,
+            1770248880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 91,
+        "description": "TR-01-3044 - LYNN PAGE (dropoff)",
+        "location": [
+          -104.8539277,
+          39.7361863
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 92,
+        "description": "TR-01-3045 - JOVANI E BUSTOS (pickup)",
+        "location": [
+          -104.9263034,
+          39.7073736
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770246900,
+            1770247080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 92,
+        "description": "TR-01-3045 - JOVANI E BUSTOS (dropoff)",
+        "location": [
+          -104.8529254,
+          39.7066019
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 93,
+        "description": "TR-01-3046 - DENNIS B WOOLEY (pickup)",
+        "location": [
+          -104.8411488,
+          39.7376779
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770235200,
+            1770235380
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 93,
+        "description": "TR-01-3046 - DENNIS B WOOLEY (dropoff)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 94,
+        "description": "TR-01-3047 - DENNIS B WOOLEY (pickup)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770248700,
+            1770248880
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 94,
+        "description": "TR-01-3047 - DENNIS B WOOLEY (dropoff)",
+        "location": [
+          -104.8411488,
+          39.7376779
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 95,
+        "description": "TR-01-3048 - KEITH W NIELSEN (pickup)",
+        "location": [
+          -104.849133,
+          39.6912624
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770249540,
+            1770249720
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 95,
+        "description": "TR-01-3048 - KEITH W NIELSEN (dropoff)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 96,
+        "description": "TR-01-3049 - KEITH W NIELSEN (pickup)",
+        "location": [
+          -104.8244401,
+          39.6778562
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770263100,
+            1770263280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 96,
+        "description": "TR-01-3049 - KEITH W NIELSEN (dropoff)",
+        "location": [
+          -104.849133,
+          39.6912624
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 97,
+        "description": "TR-01-3050 - LATONYA S JOHNSON (pickup)",
+        "location": [
+          -104.9593312,
+          39.5402575
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770208740,
+            1770208920
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 97,
+        "description": "TR-01-3050 - LATONYA S JOHNSON (dropoff)",
+        "location": [
+          -104.986462,
+          39.7525492
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 98,
+        "description": "TR-01-3051 - LATONYA S JOHNSON (pickup)",
+        "location": [
+          -104.986462,
+          39.7525492
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770213600,
+            1770213780
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 98,
+        "description": "TR-01-3051 - LATONYA S JOHNSON (dropoff)",
+        "location": [
+          -104.9593312,
+          39.5402575
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 99,
+        "description": "TR-01-3052 - Tessa L Fleury (pickup)",
+        "location": [
+          -104.9737735,
+          39.75780109999999
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770238800,
+            1770238980
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 99,
+        "description": "TR-01-3052 - Tessa L Fleury (dropoff)",
+        "location": [
+          -104.8217955,
+          39.703514
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    }
+  ],
+  "options": {
+    "g": true,
+    "x": 5,
+    "l": 300
+  },
+  "jobs": [
+    {
+      "id": 10000,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10001,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10002,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10003,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10004,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10005,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10006,
+      "description": "Scranton Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.84082,
+        39.735743
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10007,
+      "description": "Scranton Outbound - End (08:50-09:10)",
+      "location": [
+        -104.84082,
+        39.735743
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10008,
+      "description": "Scranton Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10009,
+      "description": "Scranton Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10010,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10011,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10012,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10013,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10014,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10015,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10016,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10017,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10018,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10019,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10020,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10021,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10022,
+      "description": "Liverpool Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10023,
+      "description": "Liverpool Outbound - End (08:50-09:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10024,
+      "description": "Liverpool Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10025,
+      "description": "Liverpool Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10026,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10027,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10028,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10029,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10030,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10031,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10032,
+      "description": "Liverpool Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10033,
+      "description": "Liverpool Outbound - End (08:50-09:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10034,
+      "description": "Liverpool Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10035,
+      "description": "Liverpool Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10036,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10037,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10038,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10039,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10040,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10041,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10042,
+      "description": "Liverpool Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10043,
+      "description": "Liverpool Outbound - End (08:50-09:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10044,
+      "description": "Liverpool Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10045,
+      "description": "Liverpool Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    }
+  ],
+  "relations": [
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 15
+        },
+        {
+          "type": "shipment",
+          "id": 16
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 17
+        },
+        {
+          "type": "shipment",
+          "id": 18
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 19
+        },
+        {
+          "type": "shipment",
+          "id": 20
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 21
+        },
+        {
+          "type": "shipment",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 23
+        },
+        {
+          "type": "shipment",
+          "id": 24
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 29
+        },
+        {
+          "type": "shipment",
+          "id": 30
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 31
+        },
+        {
+          "type": "shipment",
+          "id": 32
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 33
+        },
+        {
+          "type": "shipment",
+          "id": 34
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 37
+        },
+        {
+          "type": "shipment",
+          "id": 38
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 39
+        },
+        {
+          "type": "shipment",
+          "id": 40
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 43
+        },
+        {
+          "type": "shipment",
+          "id": 44
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 49
+        },
+        {
+          "type": "shipment",
+          "id": 50
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 51
+        },
+        {
+          "type": "shipment",
+          "id": 52
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 60
+        },
+        {
+          "type": "shipment",
+          "id": 61
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 64
+        },
+        {
+          "type": "shipment",
+          "id": 65
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 68
+        },
+        {
+          "type": "shipment",
+          "id": 69
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 72
+        },
+        {
+          "type": "shipment",
+          "id": 73
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 76
+        },
+        {
+          "type": "shipment",
+          "id": 77
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 79
+        },
+        {
+          "type": "shipment",
+          "id": 80
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 81
+        },
+        {
+          "type": "shipment",
+          "id": 82
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 83
+        },
+        {
+          "type": "shipment",
+          "id": 84
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 85
+        },
+        {
+          "type": "shipment",
+          "id": 86
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "vehicles": [
+    {
+      "id": 0,
+      "description": "Test Vehicle",
+      "start": [-104.9903, 39.7392],
+      "capacity": [1, 4, 0, 0],
+      "time_window": [1770202800, 1770267600],
+      "costs": {"fixed": 0},
+      "steps": [
+        {"type": "start"},
+        {"type": "job", "id": 10000},
+        {"type": "job", "id": 10001},
+        {"type": "end"}
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": 10000,
+      "description": "Facility Start",
+      "location": [-104.8592804, 39.7170955],
+      "service": 0,
+      "time_windows": [[1770216600, 1770217800]],
+      "priority": 100
+    },
+    {
+      "id": 10001,
+      "description": "Facility End",
+      "location": [-104.8592804, 39.7170955],
+      "service": 0,
+      "time_windows": [[1770219300, 1770220500]],
+      "priority": 100
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 1,
+        "description": "Pickup Client A",
+        "location": [-104.9, 39.7],
+        "service": 180,
+        "time_windows": [[1770210000, 1770213600]]
+      },
+      "delivery": {
+        "id": 2,
+        "description": "Dropoff Client A",
+        "location": [-104.85, 39.72],
+        "service": 180,
+        "time_windows": [[1770210000, 1770215400]]
+      },
+      "amount": [1, 1, 0, 0],
+      "priority": 100
+    }
+  ]
+}

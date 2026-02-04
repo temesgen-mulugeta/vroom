@@ -27,4 +27,8 @@ RoutingException::RoutingException(const std::string& message)
   : Exception(message, 3) {
 }
 
+InfeasibleRouteException::InfeasibleRouteException(const std::string& message)
+  : Exception(message, 4) {
+}
+
 } // namespace vroom

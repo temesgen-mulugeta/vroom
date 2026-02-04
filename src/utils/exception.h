@@ -43,6 +43,11 @@ public:
   explicit RoutingException(const std::string& message);
 };
 
+class InfeasibleRouteException : public Exception {
+public:
+  explicit InfeasibleRouteException(const std::string& message);
+};
+
 } // namespace vroom
 
 #endif

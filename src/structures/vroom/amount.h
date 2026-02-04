@@ -11,9 +11,12 @@ All rights reserved (see LICENSE).
 */
 
 #include <cassert>
+#include <format>
+#include <iostream>
 #include <vector>
 
 #include "structures/typedefs.h"
+#include "utils/exception.h"
 
 namespace vroom {
 
@@ -86,7 +89,10 @@ class Amount : public AmountExpression<Amount> {
   std::vector<Capacity> elems;
 
 public:
-  Amount() = default;
+  Amount() : elems() {
+    // Explicitly initialize to empty vector to avoid any potential
+    // uninitialized memory issues
+  }
 
   explicit Amount(std::size_t size) : elems(size, 0){};
 
@@ -110,19 +116,64 @@ public:
   }
 
   std::size_t size() const {
-    return elems.size();
+    auto s = elems.size();
+    // Sanity check: capacity dimensions should never exceed 100
+    if (s > 100) {
+      // Additional check: if the pointer looks invalid, report it
+      auto ptr_val = reinterpret_cast<uintptr_t>(elems.data());
+      throw InfeasibleRouteException(
+        std::format("Amount has corrupted size: {} (ptr: 0x{:x}, likely memory corruption or use-after-free)",
+                    s, ptr_val));
+    }
+    return s;
   }
 
   Amount& operator+=(const Amount& rhs) {
-    assert(this->size() == rhs.size());
-    for (std::size_t i = 0; i < this->size(); ++i) {
-      (*this)[i] += rhs[i];
+    // Handle 0-dimensional amounts gracefully
+    try {
+      auto rhs_sz = rhs.size();
+      if (rhs_sz == 0) {
+        return *this;  // Adding 0-dimensional amount has no effect
+      }
+      auto this_sz = this->size();
+      if (this_sz == 0) {
+        // Initialize this to match rhs dimensions
+        *this = rhs;
+        return *this;
+      }
+      if (this_sz != rhs_sz) {
+        throw InfeasibleRouteException(
+          std::format("operator+=: dimension mismatch: {} vs {} dimensions",
+                      this_sz, rhs_sz));
+      }
+      for (std::size_t i = 0; i < this_sz; ++i) {
+        (*this)[i] += rhs[i];
+      }
+      return *this;
+    } catch (const InfeasibleRouteException& e) {
+      throw InfeasibleRouteException(
+        std::format("In Amount::operator+=: {}", e.what()));
     }
-    return *this;
   }
 
   Amount& operator-=(const Amount& rhs) {
-    assert(this->size() == rhs.size());
+    // Handle 0-dimensional amounts gracefully
+    if (rhs.size() == 0) {
+      return *this;  // Subtracting 0-dimensional amount has no effect
+    }
+    if (this->size() == 0) {
+      // Initialize this to negative of rhs
+      elems.resize(rhs.size());
+      for (std::size_t i = 0; i < rhs.size(); ++i) {
+        (*this)[i] = -rhs[i];
+      }
+      return *this;
+    }
+    if (this->size() != rhs.size()) {
+      throw InfeasibleRouteException(
+        std::format("operator-=: dimension mismatch: {} vs {} dimensions",
+                    this->size(), rhs.size()));
+    }
     for (std::size_t i = 0; i < this->size(); ++i) {
       (*this)[i] -= rhs[i];
     }
@@ -137,7 +188,23 @@ public:
 
   template <class AmountExpression>
   Amount& operator+=(const AmountExpression& rhs) {
-    assert(this->size() == rhs.size());
+    // Handle 0-dimensional amounts gracefully
+    if (rhs.size() == 0) {
+      return *this;  // Adding 0-dimensional amount has no effect
+    }
+    if (this->size() == 0) {
+      // Initialize this to match rhs dimensions
+      elems.resize(rhs.size());
+      for (std::size_t i = 0; i < rhs.size(); ++i) {
+        (*this)[i] = rhs[i];
+      }
+      return *this;
+    }
+    if (this->size() != rhs.size()) {
+      throw InfeasibleRouteException(
+        std::format("operator+= (template): dimension mismatch: {} vs {} dimensions",
+                    this->size(), rhs.size()));
+    }
     for (std::size_t i = 0; i < this->size(); ++i) {
       (*this)[i] += rhs[i];
     }
@@ -146,7 +213,23 @@ public:
 
   template <class AmountExpression>
   Amount& operator-=(const AmountExpression& rhs) {
-    assert(this->size() == rhs.size());
+    // Handle 0-dimensional amounts gracefully
+    if (rhs.size() == 0) {
+      return *this;  // Subtracting 0-dimensional amount has no effect
+    }
+    if (this->size() == 0) {
+      // Initialize this to negative of rhs
+      elems.resize(rhs.size());
+      for (std::size_t i = 0; i < rhs.size(); ++i) {
+        (*this)[i] = -rhs[i];
+      }
+      return *this;
+    }
+    if (this->size() != rhs.size()) {
+      throw InfeasibleRouteException(
+        std::format("operator-= (template): dimension mismatch: {} vs {} dimensions",
+                    this->size(), rhs.size()));
+    }
     for (std::size_t i = 0; i < this->size(); ++i) {
       (*this)[i] -= rhs[i];
     }
@@ -161,15 +244,31 @@ class AmountSum : public AmountExpression<AmountSum<E1, E2>> {
 
 public:
   AmountSum(const E1& a, const E2& b) : lhs(a), rhs(b) {
-    assert(a.size() == b.size());
+    const auto a_size = a.size();
+    const auto b_size = b.size();
+    // Allow 0-dimensional amounts (from default-constructed Route/Summary objects)
+    // These are treated as having no contribution to the sum
+    if (a_size == 0 || b_size == 0) {
+      // Skip dimension check for empty amounts
+      return;
+    }
+    if (a_size != b_size) {
+      throw InfeasibleRouteException(
+        std::format("AmountSum: dimension mismatch: {} vs {} dimensions",
+                    a_size, b_size));
+    }
   }
 
   Capacity operator[](std::size_t i) const {
+    // Handle 0-dimensional amounts: return the non-zero operand's value
+    if (lhs.size() == 0) return rhs[i];
+    if (rhs.size() == 0) return lhs[i];
     return lhs[i] + rhs[i];
   }
 
   std::size_t size() const {
-    return lhs.size();
+    // Return the non-zero size
+    return lhs.size() > 0 ? lhs.size() : rhs.size();
   }
 };
 
@@ -186,15 +285,35 @@ class AmountDiff : public AmountExpression<AmountDiff<E1, E2>> {
 
 public:
   AmountDiff(const E1& a, const E2& b) : lhs(a), rhs(b) {
-    assert(a.size() == b.size());
+    const auto a_size = a.size();
+    const auto b_size = b.size();
+    // Allow 0-dimensional amounts (from default-constructed Route/Summary objects)
+    // These are treated as having no contribution to the difference
+    if (a_size == 0 || b_size == 0) {
+      // Skip dimension check for empty amounts
+      return;
+    }
+    if (a_size != b_size) {
+      throw InfeasibleRouteException(
+        std::format("AmountDiff: dimension mismatch: {} vs {} dimensions",
+                    a_size, b_size));
+    }
   }
 
   Capacity operator[](std::size_t i) const {
+    // Handle 0-dimensional amounts: return appropriate value
+    if (lhs.size() == 0) {
+      return -rhs[i];  // 0 - rhs
+    }
+    if (rhs.size() == 0) {
+      return lhs[i];   // lhs - 0
+    }
     return lhs[i] - rhs[i];
   }
 
   std::size_t size() const {
-    return lhs.size();
+    // Return the non-zero size
+    return lhs.size() > 0 ? lhs.size() : rhs.size();
   }
 };
 

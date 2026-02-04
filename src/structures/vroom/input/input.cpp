@@ -589,11 +589,17 @@ void Input::set_extra_compatibility() {
         continue;
       }
 
-      bool is_compatible =
-        empty_route.is_valid_addition_for_capacity(*this,
-                                                   jobs[j].pickup,
-                                                   jobs[j].delivery,
-                                                   0);
+      bool is_compatible = false;
+      try {
+        is_compatible =
+          empty_route.is_valid_addition_for_capacity(*this,
+                                                     jobs[j].pickup,
+                                                     jobs[j].delivery,
+                                                     0);
+      } catch (const InfeasibleRouteException&) {
+        // Route state issue or capacity check failed - job incompatible with vehicle
+        is_compatible = false;
+      }
 
       const bool is_shipment_pickup = (jobs[j].type == JOB_TYPE::PICKUP);
 

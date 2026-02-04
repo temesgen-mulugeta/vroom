@@ -18,12 +18,14 @@ All rights reserved (see LICENSE).
 #include <semaphore>
 #include <set>
 #include <thread>
+#include <type_traits>
 
 #include "algorithms/heuristics/heuristics.h"
 #include "algorithms/local_search/local_search.h"
 #include "structures/vroom/eval.h"
 #include "structures/vroom/input/input.h"
 #include "structures/vroom/solution/solution.h"
+#include "structures/vroom/tw_route.h"
 
 namespace vroom {
 
@@ -321,29 +323,47 @@ void run_single_search(const Input& input,
   } else if (!shipment_atomicity_valid) {
     // Atomicity violated - try to repair by moving deliveries adjacent to pickups
     auto& routes = context.solutions[rank];
-    int repairs_made = 0;
-
     for (Index v = 0; v < routes.size(); ++v) {
       auto& route = routes[v];
+      auto updated_route = route.route;
+      bool changed = false;
 
-      for (size_t i = 0; i < route.route.size(); ++i) {
-        const auto& job = input.jobs[route.route[i]];
+      for (size_t i = 0; i < updated_route.size(); ++i) {
+        const auto& job = input.jobs[updated_route[i]];
 
         if (job.type == JOB_TYPE::PICKUP) {
-          Index pickup_rank = route.route[i];
+          Index pickup_rank = updated_route[i];
           Index delivery_rank = pickup_rank + 1;
 
-          auto delivery_it = std::find(route.route.begin(), route.route.end(), delivery_rank);
+          auto delivery_it =
+            std::find(updated_route.begin(), updated_route.end(), delivery_rank);
 
-          if (delivery_it != route.route.end()) {
-            Index delivery_pos = std::distance(route.route.begin(), delivery_it);
+          if (delivery_it != updated_route.end()) {
+            Index delivery_pos = std::distance(updated_route.begin(), delivery_it);
 
             if (delivery_pos != i + 1) {
-              route.route.erase(delivery_it);
-              route.route.insert(route.route.begin() + i + 1, delivery_rank);
-              repairs_made++;
+              updated_route.erase(delivery_it);
+              updated_route.insert(updated_route.begin() + i + 1, delivery_rank);
+              changed = true;
             }
           }
+        }
+      }
+
+      if (changed) {
+        try {
+          if constexpr (std::is_same_v<Route, TWRoute>) {
+            route.replace(input,
+                          route.job_deliveries_sum(),
+                          updated_route.begin(),
+                          updated_route.end(),
+                          0,
+                          route.size());
+          } else {
+            route.set_route(input, updated_route);
+          }
+        } catch (const InfeasibleRouteException&) {
+          // If repair fails, keep original route order.
         }
       }
     }
@@ -400,7 +420,6 @@ protected:
                         &semaphore,
                         &search_time,
                         &parameters,
-                        &timeout,
                         &ep,
                         &ep_m,
                         depth,

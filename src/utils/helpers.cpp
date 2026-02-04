@@ -9,6 +9,7 @@ All rights reserved (see LICENSE).
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 #include <numeric>
 #include <sstream>
 
@@ -173,149 +174,179 @@ Solution format_solution(const Input& input, const RawSolution& raw_routes) {
     }
     const auto& v = input.vehicles[i];
 
-    assert(route.size() <= v.max_tasks);
+    std::vector<Index> assigned_ranks;
+    assigned_ranks.reserve(route.size());
 
-    auto previous_location = (v.has_start())
-                               ? v.start.value().index()
-                               : std::numeric_limits<Index>::max();
-    Eval eval_sum;
-    Duration setup = 0;
-    Duration service = 0;
-    Priority priority = 0;
-    Amount sum_pickups(input.zero_amount());
-    Amount sum_deliveries(input.zero_amount());
+    try {
+      auto ensure = [](bool condition, const std::string& message) {
+        if (!condition) {
+          throw InfeasibleRouteException(message);
+        }
+      };
+
+      ensure(route.size() <= v.max_tasks,
+             "format_solution: route size exceeds vehicle max_tasks");
+
+      auto previous_location = (v.has_start())
+                                 ? v.start.value().index()
+                                 : std::numeric_limits<Index>::max();
+      Eval eval_sum;
+      Duration setup = 0;
+      Duration service = 0;
+      Priority priority = 0;
+      Amount sum_pickups(input.zero_amount());
+      Amount sum_deliveries(input.zero_amount());
 #ifndef NDEBUG
-    std::unordered_set<Index> expected_delivery_ranks;
+      std::unordered_set<Index> expected_delivery_ranks;
 #endif
-    Amount current_load = raw_routes[i].job_deliveries_sum();
-    assert(current_load <= v.capacity);
+      Amount current_load = raw_routes[i].job_deliveries_sum();
+      ensure(current_load <= v.capacity,
+             "format_solution: initial load exceeds vehicle capacity");
 
-    // Steps for current route.
-    std::vector<Step> steps;
-    steps.reserve(route.size() + 2);
+      // Steps for current route.
+      std::vector<Step> steps;
+      steps.reserve(route.size() + 2);
 
-    Duration ETA = 0;
-    const auto& first_job = input.jobs[route.front()];
+      Duration ETA = 0;
+      const auto& first_job = input.jobs[route.front()];
 
-    // Handle start.
-    const auto start_loc = v.has_start() ? v.start.value() : first_job.location;
-    steps.emplace_back(STEP_TYPE::START, start_loc, current_load);
-    if (v.has_start()) {
-      const auto next_leg = v.eval(v.start.value().index(), first_job.index());
-      ETA += next_leg.duration;
-      eval_sum += next_leg;
-    }
+      // Handle start.
+      const auto start_loc = v.has_start() ? v.start.value() : first_job.location;
+      steps.emplace_back(STEP_TYPE::START, start_loc, current_load);
+      if (v.has_start()) {
+        const auto next_leg = v.eval(v.start.value().index(), first_job.index());
+        ETA += next_leg.duration;
+        eval_sum += next_leg;
+      }
 
-    // Handle jobs.
-    assert(input.vehicle_ok_with_job(i, route.front()));
+      // Handle jobs.
+      ensure(input.vehicle_ok_with_job(i, route.front()),
+             "format_solution: vehicle/job incompatibility");
 
-    const auto first_job_setup =
-      (first_job.index() == previous_location) ? 0 : first_job.setups[v.type];
-    setup += first_job_setup;
-    previous_location = first_job.index();
+      const auto first_job_setup =
+        (first_job.index() == previous_location) ? 0 : first_job.setups[v.type];
+      setup += first_job_setup;
+      previous_location = first_job.index();
 
-    const auto first_job_service = first_job.services[v.type];
-    service += first_job_service;
-    priority += first_job.priority;
+      const auto first_job_service = first_job.services[v.type];
+      service += first_job_service;
+      priority += first_job.priority;
 
-    current_load += first_job.pickup;
-    current_load -= first_job.delivery;
-    sum_pickups += first_job.pickup;
-    sum_deliveries += first_job.delivery;
-    assert(current_load <= v.capacity);
-
-#ifndef NDEBUG
-    check_precedence(input, expected_delivery_ranks, route.front());
-#endif
-
-    steps.emplace_back(first_job,
-                       scale_to_user_duration(first_job_setup),
-                       scale_to_user_duration(first_job_service),
-                       current_load);
-    auto& first = steps.back();
-    first.duration = scale_to_user_duration(ETA);
-    first.distance = eval_sum.distance;
-    first.arrival = scale_to_user_duration(ETA);
-    ETA += (first_job_setup + first_job_service);
-    unassigned_ranks.erase(route.front());
-
-    for (std::size_t r = 0; r < route.size() - 1; ++r) {
-      assert(input.vehicle_ok_with_job(i, route[r + 1]));
-      const auto next_leg =
-        v.eval(input.jobs[route[r]].index(), input.jobs[route[r + 1]].index());
-      ETA += next_leg.duration;
-      eval_sum += next_leg;
-
-      const auto& current_job = input.jobs[route[r + 1]];
-
-      const auto current_setup = (current_job.index() == previous_location)
-                                   ? 0
-                                   : current_job.setups[v.type];
-      setup += current_setup;
-      previous_location = current_job.index();
-
-      const auto current_service = current_job.services[v.type];
-      service += current_service;
-      priority += current_job.priority;
-
-      current_load += current_job.pickup;
-      current_load -= current_job.delivery;
-      sum_pickups += current_job.pickup;
-      sum_deliveries += current_job.delivery;
-      assert(current_load <= v.capacity);
+      current_load += first_job.pickup;
+      current_load -= first_job.delivery;
+      sum_pickups += first_job.pickup;
+      sum_deliveries += first_job.delivery;
+      ensure(current_load <= v.capacity,
+             "format_solution: load exceeds vehicle capacity");
 
 #ifndef NDEBUG
-      check_precedence(input, expected_delivery_ranks, route[r + 1]);
+      check_precedence(input, expected_delivery_ranks, route.front());
 #endif
 
-      steps.emplace_back(current_job,
-                         scale_to_user_duration(current_setup),
-                         scale_to_user_duration(current_service),
+      steps.emplace_back(first_job,
+                         scale_to_user_duration(first_job_setup),
+                         scale_to_user_duration(first_job_service),
                          current_load);
-      auto& current = steps.back();
-      current.duration = scale_to_user_duration(eval_sum.duration);
-      current.distance = eval_sum.distance;
-      current.arrival = scale_to_user_duration(ETA);
-      ETA += (current_setup + current_service);
-      unassigned_ranks.erase(route[r + 1]);
+      auto& first = steps.back();
+      first.duration = scale_to_user_duration(ETA);
+      first.distance = eval_sum.distance;
+      first.arrival = scale_to_user_duration(ETA);
+      ETA += (first_job_setup + first_job_service);
+      assigned_ranks.push_back(route.front());
+
+      for (std::size_t r = 0; r < route.size() - 1; ++r) {
+        ensure(input.vehicle_ok_with_job(i, route[r + 1]),
+               "format_solution: vehicle/job incompatibility");
+        const auto next_leg =
+          v.eval(input.jobs[route[r]].index(), input.jobs[route[r + 1]].index());
+        ETA += next_leg.duration;
+        eval_sum += next_leg;
+
+        const auto& current_job = input.jobs[route[r + 1]];
+
+        const auto current_setup = (current_job.index() == previous_location)
+                                     ? 0
+                                     : current_job.setups[v.type];
+        setup += current_setup;
+        previous_location = current_job.index();
+
+        const auto current_service = current_job.services[v.type];
+        service += current_service;
+        priority += current_job.priority;
+
+        current_load += current_job.pickup;
+        current_load -= current_job.delivery;
+        sum_pickups += current_job.pickup;
+        sum_deliveries += current_job.delivery;
+        ensure(current_load <= v.capacity,
+               "format_solution: load exceeds vehicle capacity");
+
+#ifndef NDEBUG
+        check_precedence(input, expected_delivery_ranks, route[r + 1]);
+#endif
+
+        steps.emplace_back(current_job,
+                           scale_to_user_duration(current_setup),
+                           scale_to_user_duration(current_service),
+                           current_load);
+        auto& current = steps.back();
+        current.duration = scale_to_user_duration(eval_sum.duration);
+        current.distance = eval_sum.distance;
+        current.arrival = scale_to_user_duration(ETA);
+        ETA += (current_setup + current_service);
+        assigned_ranks.push_back(route[r + 1]);
+      }
+
+      // Handle end.
+      const auto& last_job = input.jobs[route.back()];
+      const auto end_loc = v.has_end() ? v.end.value() : last_job.location;
+      steps.emplace_back(STEP_TYPE::END, end_loc, current_load);
+      if (v.has_end()) {
+        const auto next_leg = v.eval(last_job.index(), v.end.value().index());
+        ETA += next_leg.duration;
+        eval_sum += next_leg;
+      }
+      auto& last = steps.back();
+      last.duration = scale_to_user_duration(eval_sum.duration);
+      last.distance = eval_sum.distance;
+      last.arrival = scale_to_user_duration(ETA);
+
+#ifndef NDEBUG
+      ensure(expected_delivery_ranks.empty(),
+             "format_solution: precedence constraint violated");
+#endif
+      ensure(v.ok_for_range_bounds(eval_sum),
+             "format_solution: vehicle range bounds violated");
+
+      ensure(v.fixed_cost() % (DURATION_FACTOR * COST_FACTOR) == 0,
+             "format_solution: invalid fixed cost scaling");
+      const UserCost user_fixed_cost = scale_to_user_cost(v.fixed_cost());
+      const UserCost user_travel_cost = scale_to_user_cost(eval_sum.cost);
+      const UserCost user_task_cost =
+        scale_to_user_cost(v.task_cost(setup + service));
+
+      for (Index rank : assigned_ranks) {
+        unassigned_ranks.erase(rank);
+      }
+
+      routes.emplace_back(v.id,
+                          std::move(steps),
+                          user_fixed_cost + user_travel_cost + user_task_cost,
+                          scale_to_user_duration(eval_sum.duration),
+                          eval_sum.distance,
+                          scale_to_user_duration(setup),
+                          scale_to_user_duration(service),
+                          0,
+                          priority,
+                          sum_deliveries,
+                          sum_pickups,
+                          v.profile,
+                          v.description);
+    } catch (const InfeasibleRouteException& e) {
+      std::cerr << "[Warning] Vehicle " << v.id
+                << " route dropped: " << e.message << std::endl;
+      continue;
     }
-
-    // Handle end.
-    const auto& last_job = input.jobs[route.back()];
-    const auto end_loc = v.has_end() ? v.end.value() : last_job.location;
-    steps.emplace_back(STEP_TYPE::END, end_loc, current_load);
-    if (v.has_end()) {
-      const auto next_leg = v.eval(last_job.index(), v.end.value().index());
-      ETA += next_leg.duration;
-      eval_sum += next_leg;
-    }
-    auto& last = steps.back();
-    last.duration = scale_to_user_duration(eval_sum.duration);
-    last.distance = eval_sum.distance;
-    last.arrival = scale_to_user_duration(ETA);
-
-    assert(expected_delivery_ranks.empty());
-    assert(v.ok_for_range_bounds(eval_sum));
-
-    assert(v.fixed_cost() % (DURATION_FACTOR * COST_FACTOR) == 0);
-    const UserCost user_fixed_cost = scale_to_user_cost(v.fixed_cost());
-    const UserCost user_travel_cost = scale_to_user_cost(eval_sum.cost);
-    const UserCost user_task_cost =
-      scale_to_user_cost(v.task_cost(setup + service));
-
-    routes.emplace_back(v.id,
-                        std::move(steps),
-                        user_fixed_cost + user_travel_cost + user_task_cost,
-                        scale_to_user_duration(eval_sum.duration),
-                        eval_sum.distance,
-                        scale_to_user_duration(setup),
-                        scale_to_user_duration(service),
-                        0,
-                        priority,
-                        sum_deliveries,
-                        sum_pickups,
-                        v.profile,
-                        v.description);
   }
 
   return Solution(input.zero_amount(),
@@ -328,7 +359,14 @@ Route format_route(const Input& input,
                    std::unordered_set<Index>& unassigned_ranks) {
   const auto& v = input.vehicles[tw_r.v_rank];
 
-  assert(tw_r.size() <= v.max_tasks);
+  auto ensure = [](bool condition, const std::string& message) {
+    if (!condition) {
+      throw InfeasibleRouteException(message);
+    }
+  };
+
+  ensure(tw_r.size() <= v.max_tasks,
+         "format_route: route size exceeds vehicle max_tasks");
 
   // ETA logic: aim at earliest possible arrival then determine latest
   // possible start time in order to minimize waiting times.
@@ -365,19 +403,26 @@ Route format_route(const Input& input,
 
     // Take into account timing constraints for breaks before current
     // job.
-    assert(tw_r.breaks_at_rank[r] <= tw_r.breaks_counts[r]);
+    if (tw_r.breaks_at_rank[r] > tw_r.breaks_counts[r]) {
+      throw InfeasibleRouteException(
+        "format_route: breaks_at_rank exceeds breaks_counts");
+    }
     Index break_rank = tw_r.breaks_counts[r];
     for (Index i = 0; i < tw_r.breaks_at_rank[r]; ++i) {
       --break_rank;
       const auto& b = v.breaks[break_rank];
-      assert(b.service <= step_start);
+      if (b.service > step_start) {
+        throw InfeasibleRouteException(
+          "format_route: break service time exceeds available time");
+      }
       step_start -= b.service;
 
       const auto b_tw =
         std::find_if(b.tws.rbegin(), b.tws.rend(), [&](const auto& tw) {
           return tw.start <= step_start;
         });
-      assert(b_tw != b.tws.rend());
+      ensure(b_tw != b.tws.rend(),
+             "format_route: no valid time window found for break");
 
       if (b_tw->end < step_start) {
         if (const auto margin = step_start - b_tw->end;
@@ -402,21 +447,31 @@ Route format_route(const Input& input,
     const Duration diff =
       current_setup + previous_job.services[v.type] + remaining_travel_time;
 
-    assert(diff <= step_start);
+    if (diff > step_start) {
+      throw InfeasibleRouteException(
+        "format_route: travel time exceeds available time");
+    }
     Duration candidate_start = step_start - diff;
-    assert(tw_r.earliest[r - 1] <= candidate_start);
+    if (tw_r.earliest[r - 1] > candidate_start) {
+      throw InfeasibleRouteException(
+        "format_route: earliest arrival exceeds candidate start time");
+    }
 
     const auto j_tw =
       std::find_if(previous_job.tws.rbegin(),
                    previous_job.tws.rend(),
                    [&](const auto& tw) { return tw.start <= candidate_start; });
-    assert(j_tw != previous_job.tws.rend());
+    if (j_tw == previous_job.tws.rend()) {
+      throw InfeasibleRouteException(
+        "format_route: no valid time window found for job");
+    }
 
     step_start = std::min(candidate_start, j_tw->end);
     if (step_start < candidate_start) {
       backward_wt += (candidate_start - step_start);
     }
-    assert(previous_job.is_valid_start(step_start));
+    ensure(previous_job.is_valid_start(step_start),
+           "format_route: invalid job start time");
   }
 
   // Now pack everything ASAP based on first job start date.
@@ -426,19 +481,22 @@ Route format_route(const Input& input,
       : 0;
 
   // Take into account timing constraints for breaks before first job.
-  assert(tw_r.breaks_at_rank[0] <= tw_r.breaks_counts[0]);
+  ensure(tw_r.breaks_at_rank[0] <= tw_r.breaks_counts[0],
+         "format_route: breaks_at_rank exceeds breaks_counts at rank 0");
   Index break_rank = tw_r.breaks_counts[0];
   for (Index r = 0; r < tw_r.breaks_at_rank[0]; ++r) {
     --break_rank;
     const auto& b = v.breaks[break_rank];
-    assert(b.service <= step_start);
+    ensure(b.service <= step_start,
+           "format_route: break service time exceeds available time");
     step_start -= b.service;
 
     const auto b_tw =
       std::find_if(b.tws.rbegin(), b.tws.rend(), [&](const auto& tw) {
         return tw.start <= step_start;
       });
-    assert(b_tw != b.tws.rend());
+    ensure(b_tw != b.tws.rend(),
+           "format_route: no valid time window found for break");
 
     if (b_tw->end < step_start) {
       if (const auto margin = step_start - b_tw->end;
@@ -455,24 +513,28 @@ Route format_route(const Input& input,
 
   if (v.has_start()) {
     first_location = v.start.value();
-    assert(remaining_travel_time <= step_start);
+    ensure(remaining_travel_time <= step_start,
+           "format_route: remaining travel time exceeds step start");
     step_start -= remaining_travel_time;
   }
 
-  assert(first_location.has_value() && last_location.has_value());
+  ensure(first_location.has_value() && last_location.has_value(),
+         "format_route: missing start or end location");
 
 #ifndef NDEBUG
   std::unordered_set<Index> expected_delivery_ranks;
 #endif
   Amount current_load = tw_r.job_deliveries_sum();
-  assert(current_load <= v.capacity);
+  ensure(current_load <= v.capacity,
+         "format_route: initial load exceeds vehicle capacity");
 
   // Steps for current route.
   std::vector<Step> steps;
   steps.reserve(tw_r.size() + 2 + v.breaks.size());
 
   steps.emplace_back(STEP_TYPE::START, first_location.value(), current_load);
-  assert(v.tw.contains(step_start));
+  ensure(v.tw.contains(step_start),
+         "format_route: start time outside vehicle time window");
   steps.back().arrival = scale_to_user_duration(step_start);
   UserDuration user_previous_end = steps.back().arrival;
 
@@ -503,8 +565,12 @@ Route format_route(const Input& input,
 
   Duration travel_time = current_eval.duration;
 
+  std::vector<Index> assigned_ranks;
+  assigned_ranks.reserve(tw_r.route.size());
+
   for (std::size_t r = 0; r < tw_r.route.size(); ++r) {
-    assert(input.vehicle_ok_with_job(tw_r.v_rank, tw_r.route[r]));
+    ensure(input.vehicle_ok_with_job(tw_r.v_rank, tw_r.route[r]),
+           "format_route: vehicle/job incompatibility");
     const auto& current_job = input.jobs[tw_r.route[r]];
     auto user_distance = eval_sum.distance;
 
@@ -517,13 +583,15 @@ Route format_route(const Input& input,
     }
 
     // Handles breaks before this job.
-    assert(tw_r.breaks_at_rank[r] <= tw_r.breaks_counts[r]);
+    ensure(tw_r.breaks_at_rank[r] <= tw_r.breaks_counts[r],
+           "format_route: breaks_at_rank exceeds breaks_counts");
     break_rank = tw_r.breaks_counts[r] - tw_r.breaks_at_rank[r];
 
     for (Index i = 0; i < tw_r.breaks_at_rank[r]; ++i, ++break_rank) {
       const auto& b = v.breaks[break_rank];
 
-      assert(b.is_valid_for_load(current_load));
+      ensure(b.is_valid_for_load(current_load),
+             "format_route: break load constraint violated");
 
       steps.emplace_back(b, current_load);
       auto& current_break = steps.back();
@@ -531,7 +599,8 @@ Route format_route(const Input& input,
       const auto b_tw = std::ranges::find_if(b.tws, [&](const auto& tw) {
         return step_start <= tw.end;
       });
-      assert(b_tw != b.tws.end());
+      ensure(b_tw != b.tws.end(),
+             "format_route: no valid time window found for break");
 
       if (step_start < b_tw->start) {
         if (const auto margin = b_tw->start - step_start;
@@ -566,16 +635,18 @@ Route format_route(const Input& input,
         current_break.arrival = scale_to_user_duration(step_start);
       }
 
-      assert(b_tw->start % DURATION_FACTOR == 0 &&
-             scale_to_user_duration(b_tw->start) <=
-               current_break.arrival + current_break.waiting_time &&
-             (current_break.waiting_time == 0 ||
-              scale_to_user_duration(b_tw->start) ==
-                current_break.arrival + current_break.waiting_time));
+      ensure(b_tw->start % DURATION_FACTOR == 0 &&
+               scale_to_user_duration(b_tw->start) <=
+                 current_break.arrival + current_break.waiting_time &&
+               (current_break.waiting_time == 0 ||
+                scale_to_user_duration(b_tw->start) ==
+                  current_break.arrival + current_break.waiting_time),
+             "format_route: break timing invariant violated");
 
       // Recompute cumulated durations in a consistent way as seen
       // from UserDuration.
-      assert(user_previous_end <= current_break.arrival);
+      ensure(user_previous_end <= current_break.arrival,
+             "format_route: break arrival before previous end");
       auto user_travel_time = current_break.arrival - user_previous_end;
       user_duration += user_travel_time;
       current_break.duration = user_duration;
@@ -612,7 +683,8 @@ Route format_route(const Input& input,
     current_load -= current_job.delivery;
     sum_pickups += current_job.pickup;
     sum_deliveries += current_job.delivery;
-    assert(current_load <= v.capacity);
+    ensure(current_load <= v.capacity,
+           "format_route: load exceeds vehicle capacity");
 
 #ifndef NDEBUG
     check_precedence(input, expected_delivery_ranks, tw_r.route[r]);
@@ -625,7 +697,8 @@ Route format_route(const Input& input,
     auto& current = steps.back();
 
     step_start += travel_time;
-    assert(step_start <= tw_r.latest[r]);
+    ensure(step_start <= tw_r.latest[r],
+           "format_route: step start exceeds latest time window");
 
     current.arrival = scale_to_user_duration(step_start);
     current.distance = eval_sum.distance;
@@ -634,7 +707,8 @@ Route format_route(const Input& input,
       std::ranges::find_if(current_job.tws, [&](const auto& tw) {
         return step_start <= tw.end;
       });
-    assert(j_tw != current_job.tws.end());
+    ensure(j_tw != current_job.tws.end(),
+           "format_route: no valid time window found for job");
 
     if (step_start < j_tw->start) {
       const Duration wt = j_tw->start - step_start;
@@ -651,23 +725,25 @@ Route format_route(const Input& input,
 
     // Recompute cumulated durations in a consistent way as seen from
     // UserDuration.
-    assert(user_previous_end <= current.arrival);
+    ensure(user_previous_end <= current.arrival,
+           "format_route: arrival before previous end");
     auto user_travel_time = current.arrival - user_previous_end;
     user_duration += user_travel_time;
     current.duration = user_duration;
     user_previous_end =
       current.arrival + current.waiting_time + current.setup + current.service;
 
-    assert(
-      j_tw->start % DURATION_FACTOR == 0 &&
-      scale_to_user_duration(j_tw->start) <=
-        current.arrival + current.waiting_time &&
-      (current.waiting_time == 0 || scale_to_user_duration(j_tw->start) ==
-                                      current.arrival + current.waiting_time));
+    ensure(j_tw->start % DURATION_FACTOR == 0 &&
+             scale_to_user_duration(j_tw->start) <=
+               current.arrival + current.waiting_time &&
+             (current.waiting_time == 0 ||
+              scale_to_user_duration(j_tw->start) ==
+                current.arrival + current.waiting_time),
+           "format_route: job timing invariant violated");
 
     step_start += (current_setup + current_service);
 
-    unassigned_ranks.erase(tw_r.route[r]);
+    assigned_ranks.push_back(tw_r.route[r]);
   }
 
   // Handle breaks after last job.
@@ -678,13 +754,15 @@ Route format_route(const Input& input,
   auto user_distance = eval_sum.distance;
 
   auto r = tw_r.route.size();
-  assert(tw_r.breaks_at_rank[r] <= tw_r.breaks_counts[r]);
+  ensure(tw_r.breaks_at_rank[r] <= tw_r.breaks_counts[r],
+         "format_route: breaks_at_rank exceeds breaks_counts after last job");
   break_rank = tw_r.breaks_counts[r] - tw_r.breaks_at_rank[r];
 
   for (Index i = 0; i < tw_r.breaks_at_rank[r]; ++i, ++break_rank) {
     const auto& b = v.breaks[break_rank];
 
-    assert(b.is_valid_for_load(current_load));
+    ensure(b.is_valid_for_load(current_load),
+           "format_route: break load constraint violated");
 
     steps.emplace_back(b, current_load);
     auto& current_break = steps.back();
@@ -692,7 +770,8 @@ Route format_route(const Input& input,
     const auto b_tw = std::ranges::find_if(b.tws, [&](const auto& tw) {
       return step_start <= tw.end;
     });
-    assert(b_tw != b.tws.end());
+    ensure(b_tw != b.tws.end(),
+           "format_route: no valid time window found for break");
 
     if (step_start < b_tw->start) {
       if (const auto margin = b_tw->start - step_start; margin <= travel_time) {
@@ -726,16 +805,18 @@ Route format_route(const Input& input,
       current_break.arrival = scale_to_user_duration(step_start);
     }
 
-    assert(b_tw->start % DURATION_FACTOR == 0 &&
-           scale_to_user_duration(b_tw->start) <=
-             current_break.arrival + current_break.waiting_time &&
-           (current_break.waiting_time == 0 ||
-            scale_to_user_duration(b_tw->start) ==
-              current_break.arrival + current_break.waiting_time));
+    ensure(b_tw->start % DURATION_FACTOR == 0 &&
+             scale_to_user_duration(b_tw->start) <=
+               current_break.arrival + current_break.waiting_time &&
+             (current_break.waiting_time == 0 ||
+              scale_to_user_duration(b_tw->start) ==
+                current_break.arrival + current_break.waiting_time),
+           "format_route: break timing invariant violated");
 
     // Recompute cumulated durations in a consistent way as seen from
     // UserDuration.
-    assert(user_previous_end <= current_break.arrival);
+    ensure(user_previous_end <= current_break.arrival,
+           "format_route: break arrival before previous end");
     auto user_travel_time = current_break.arrival - user_previous_end;
     user_duration += user_travel_time;
     current_break.duration = user_duration;
@@ -762,29 +843,40 @@ Route format_route(const Input& input,
     eval_sum += current_eval;
     step_start += travel_time;
   }
-  assert(v.tw.contains(step_start));
+  ensure(v.tw.contains(step_start),
+         "format_route: end time outside vehicle time window");
   end_step.arrival = scale_to_user_duration(step_start);
   end_step.distance = eval_sum.distance;
 
   // Recompute cumulated durations in a consistent way as seen from
   // UserDuration.
-  assert(user_previous_end <= end_step.arrival);
+  ensure(user_previous_end <= end_step.arrival,
+         "format_route: end arrival before previous end");
   auto user_travel_time = end_step.arrival - user_previous_end;
   user_duration += user_travel_time;
   end_step.duration = user_duration;
 
-  assert(step_start == tw_r.earliest_end);
-  assert(forward_wt == backward_wt);
+  ensure(step_start == tw_r.earliest_end,
+         "format_route: earliest end mismatch");
+  ensure(forward_wt == backward_wt,
+         "format_route: waiting time mismatch");
 
-  assert(step_start ==
-         front_step_arrival + duration + setup + service + forward_wt);
+  ensure(step_start ==
+           front_step_arrival + duration + setup + service + forward_wt,
+         "format_route: timing invariant violated");
 
-  assert(expected_delivery_ranks.empty());
+#ifndef NDEBUG
+  ensure(expected_delivery_ranks.empty(),
+         "format_route: precedence constraint violated");
+#endif
 
-  assert(eval_sum.duration == duration);
-  assert(v.ok_for_range_bounds(eval_sum));
+  ensure(eval_sum.duration == duration,
+         "format_route: duration mismatch");
+  ensure(v.ok_for_range_bounds(eval_sum),
+         "format_route: vehicle range bounds violated");
 
-  assert(v.fixed_cost() % (DURATION_FACTOR * COST_FACTOR) == 0);
+  ensure(v.fixed_cost() % (DURATION_FACTOR * COST_FACTOR) == 0,
+         "format_route: invalid fixed cost scaling");
   const UserCost user_fixed_cost = utils::scale_to_user_cost(v.fixed_cost());
   const UserCost user_travel_cost =
     v.cost_based_on_metrics()
@@ -793,6 +885,10 @@ Route format_route(const Input& input,
       : utils::scale_to_user_cost(eval_sum.cost);
   const UserCost user_task_cost =
     scale_to_user_cost(v.task_cost(setup + service));
+
+  for (Index rank : assigned_ranks) {
+    unassigned_ranks.erase(rank);
+  }
 
   return Route(v.id,
                std::move(steps),
@@ -821,7 +917,13 @@ Solution format_solution(const Input& input, const TWSolution& tw_routes) {
 
   for (const auto& tw_route : tw_routes) {
     if (!tw_route.empty()) {
-      routes.push_back(format_route(input, tw_route, unassigned_ranks));
+      try {
+        routes.push_back(format_route(input, tw_route, unassigned_ranks));
+      } catch (const InfeasibleRouteException& e) {
+        const auto& v = input.vehicles[tw_route.v_rank];
+        std::cerr << "[Warning] Vehicle " << v.id
+                  << " route dropped: " << e.message << std::endl;
+      }
     }
   }
 

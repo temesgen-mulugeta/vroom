@@ -31,17 +31,27 @@ void RawRoute::set_route(const Input& input, const std::vector<Index>& r) {
 
 void RawRoute::update_amounts(const Input& input) {
   auto step_size = route.size() + 2;
-  _fwd_pickups.resize(route.size());
-  _fwd_deliveries.resize(route.size());
-  _bwd_deliveries.resize(route.size());
-  _bwd_pickups.resize(route.size());
-  _pd_loads.resize(route.size());
+  _fwd_pickups.resize(route.size(), _zero);
+  _fwd_deliveries.resize(route.size(), _zero);
+  _bwd_deliveries.resize(route.size(), _zero);
+  _bwd_pickups.resize(route.size(), _zero);
+  _pd_loads.resize(route.size(), _zero);
   _nb_pickups.resize(route.size());
   _nb_deliveries.resize(route.size());
 
-  _current_loads.resize(step_size);
-  _fwd_peaks.resize(step_size);
-  _bwd_peaks.resize(step_size);
+  _current_loads.resize(step_size, _zero);
+  _fwd_peaks.resize(step_size, _zero);
+  _bwd_peaks.resize(step_size, _zero);
+
+  // Validate that resize properly initialized all elements
+  const auto expected_size = _zero.size();
+  for (std::size_t i = 0; i < _fwd_peaks.size(); ++i) {
+    if (_fwd_peaks[i].size() != expected_size) {
+      throw InfeasibleRouteException(
+        std::format("_fwd_peaks[{}] has size {} but expected {}",
+                    i, _fwd_peaks[i].size(), expected_size));
+    }
+  }
 
   if (route.empty()) {
     // So that check in is_valid_addition_for_capacity is consistent
@@ -162,18 +172,68 @@ bool RawRoute::is_valid_addition_for_capacity(const Input&,
                                               const Amount& pickup,
                                               const Amount& delivery,
                                               const Index rank) const {
-  assert(rank <= route.size());
+  // Bounds checking: rank must be valid for both route and peaks arrays
+  if (rank > route.size()) {
+    throw InfeasibleRouteException(
+      std::format("Invalid rank {} > route.size() {}", rank, route.size()));
+  }
 
-  return (_fwd_peaks[rank] + delivery <= capacity) &&
-         (_bwd_peaks[rank] + pickup <= capacity);
+  // Check if peaks arrays are large enough (should be route.size() + 2)
+  if (rank >= _fwd_peaks.size() || rank >= _bwd_peaks.size()) {
+    // Peaks arrays are out of sync - route was modified without calling update_amounts
+    // This is infeasible, but shouldn't crash
+    throw InfeasibleRouteException(
+      std::format("Peaks arrays too small: rank={}, _fwd_peaks.size()={}, route.size()={}. "
+                  "Route state out of sync - update_amounts() needed",
+                  rank, _fwd_peaks.size(), route.size()));
+  }
+
+  try {
+    // Check dimensions match
+    if (_fwd_peaks[rank].size() != delivery.size()) {
+      throw InfeasibleRouteException(
+        std::format("Capacity dimension mismatch: _fwd_peaks[{}].size()={} vs delivery.size()={}",
+                    rank, _fwd_peaks[rank].size(), delivery.size()));
+    }
+    if (_bwd_peaks[rank].size() != pickup.size()) {
+      throw InfeasibleRouteException(
+        std::format("Capacity dimension mismatch: _bwd_peaks[{}].size()={} vs pickup.size()={}",
+                    rank, _bwd_peaks[rank].size(), pickup.size()));
+    }
+
+    return (_fwd_peaks[rank] + delivery <= capacity) &&
+           (_bwd_peaks[rank] + pickup <= capacity);
+  } catch (const InfeasibleRouteException& e) {
+    throw InfeasibleRouteException(
+      std::format("In is_valid_addition_for_capacity(rank={}): {}", rank, e.what()));
+  }
 }
 
 bool RawRoute::is_valid_addition_for_load(const Input&,
                                           const Amount& pickup,
                                           const Index rank) const {
-  assert(rank <= route.size());
+  if (rank > route.size()) {
+    throw InfeasibleRouteException(
+      std::format("Invalid rank {} > route.size() {} in is_valid_addition_for_load",
+                  rank, route.size()));
+  }
+
+  if (!route.empty() && rank >= _current_loads.size()) {
+    throw InfeasibleRouteException(
+      std::format("Current loads out of sync: rank {} >= _current_loads.size() {}",
+                  rank, _current_loads.size()));
+  }
 
   const auto& load = route.empty() ? _zero : _current_loads[rank];
+
+  const auto load_size = load.size();
+  const auto pickup_size = pickup.size();
+  if (load_size != 0 && pickup_size != 0 && load_size != pickup_size) {
+    throw InfeasibleRouteException(
+      std::format("Load dimension mismatch: load.size()={} vs pickup.size()={}",
+                  load_size, pickup_size));
+  }
+
   return load + pickup <= capacity;
 }
 
@@ -258,7 +318,11 @@ const Amount& RawRoute::pickup_margin() const {
 }
 
 Amount RawRoute::pickup_in_range(Index i, Index j) const {
-  assert(i <= j && j <= _fwd_pickups.size());
+  if (i > j || j > _fwd_pickups.size()) {
+    throw InfeasibleRouteException(
+      std::format("pickup_in_range: invalid range [{}, {}) exceeds size {}",
+                  i, j, _fwd_pickups.size()));
+  }
   if (i == j || route.empty()) {
     return _zero;
   }
@@ -269,7 +333,11 @@ Amount RawRoute::pickup_in_range(Index i, Index j) const {
 }
 
 Amount RawRoute::delivery_in_range(Index i, Index j) const {
-  assert(i <= j && j <= _bwd_deliveries.size());
+  if (i > j || j > _bwd_deliveries.size()) {
+    throw InfeasibleRouteException(
+      std::format("delivery_in_range: invalid range [{}, {}) exceeds size {}",
+                  i, j, _bwd_deliveries.size()));
+  }
   if (i == j || route.empty()) {
     return _zero;
   }

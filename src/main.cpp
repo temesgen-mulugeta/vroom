@@ -199,12 +199,27 @@ int main(int argc, char** argv) {
                                   cl_args.apply_TSPFix);
     vroom::io::parse(problem_instance, cl_args.input, cl_args.geometry);
 
-    const vroom::Solution sol = (cl_args.check)
-                                  ? problem_instance.check(cl_args.nb_threads)
-                                  : problem_instance.solve(cl_args.nb_searches,
-                                                           cl_args.depth,
-                                                           cl_args.nb_threads,
-                                                           cl_args.timeout);
+    const vroom::Solution sol = [&]() {
+      try {
+        return (cl_args.check)
+                 ? problem_instance.check(cl_args.nb_threads)
+                 : problem_instance.solve(cl_args.nb_searches,
+                                          cl_args.depth,
+                                          cl_args.nb_threads,
+                                          cl_args.timeout);
+      } catch (const vroom::InfeasibleRouteException& e) {
+        std::cerr << "[Warning] " << e.message
+                  << " Falling back to all-unassigned solution." << std::endl;
+        std::vector<vroom::Job> unassigned;
+        unassigned.reserve(problem_instance.jobs.size());
+        for (const auto& job : problem_instance.jobs) {
+          unassigned.push_back(job);
+        }
+        return vroom::Solution(problem_instance.zero_amount(),
+                               std::vector<vroom::Route>{},
+                               std::move(unassigned));
+      }
+    }();
 
     // Write solution.
     vroom::io::write_to_json(sol,

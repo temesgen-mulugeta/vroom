@@ -1,0 +1,1899 @@
+{
+  "vehicles": [
+    {
+      "id": 0,
+      "description": "ABRAHAM 2 - Stretcher Van #2",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        6,
+        1,
+        1
+      ],
+      "time_window": [
+        1770202800,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      }
+    },
+    {
+      "id": 1,
+      "description": "ADDIS 3 - Sedan #3",
+      "start": [
+        -104.9903,
+        39.7392
+      ],
+      "capacity": [
+        1,
+        4,
+        0,
+        0
+      ],
+      "time_window": [
+        1770202800,
+        1770267600
+      ],
+      "costs": {
+        "fixed": 0
+      },
+      "steps": [
+        {
+          "type": "start"
+        },
+        {
+          "type": "job",
+          "id": 10000
+        },
+        {
+          "type": "job",
+          "id": 10001
+        },
+        {
+          "type": "job",
+          "id": 10002
+        },
+        {
+          "type": "job",
+          "id": 10003
+        },
+        {
+          "type": "job",
+          "id": 10004
+        },
+        {
+          "type": "job",
+          "id": 10005
+        },
+        {
+          "type": "end"
+        }
+      ]
+    }
+  ],
+  "shipments": [
+    {
+      "pickup": {
+        "id": 0,
+        "description": "TR-01-2953 - LISA A ARTIS (pickup)",
+        "location": [
+          -104.8744228,
+          39.7340947
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228900,
+            1770229080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 0,
+        "description": "TR-01-2953 - LISA A ARTIS (dropoff)",
+        "location": [
+          -104.8945845,
+          39.6949695
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 1,
+        "description": "TR-01-2954 - MICHAEL J LYONS (pickup)",
+        "location": [
+          -104.8750157,
+          39.6693345
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770237000,
+            1770237180
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 1,
+        "description": "TR-01-2954 - MICHAEL J LYONS (dropoff)",
+        "location": [
+          -104.9040081,
+          39.7175118
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 2,
+        "description": "TR-01-2955 - MICHAEL J LYONS (pickup)",
+        "location": [
+          -104.9040081,
+          39.7175118
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770242400,
+            1770242580
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 2,
+        "description": "TR-01-2955 - MICHAEL J LYONS (dropoff)",
+        "location": [
+          -104.8750157,
+          39.6693345
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 3,
+        "description": "TR-01-2956 - GWENDOLYN W JOHNSON (pickup)",
+        "location": [
+          -104.8828796,
+          39.7042473
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770214020,
+            1770214200
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 3,
+        "description": "TR-01-2956 - GWENDOLYN W JOHNSON (dropoff)",
+        "location": [
+          -104.8440836,
+          39.7426948
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 4,
+        "description": "TR-01-2957 - KATHLEEN HUMPHREYS (pickup)",
+        "location": [
+          -104.981449,
+          39.74105429999999
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770219360,
+            1770219540
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 4,
+        "description": "TR-01-2957 - KATHLEEN HUMPHREYS (dropoff)",
+        "location": [
+          -104.9744302,
+          39.7463237
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 5,
+        "description": "TR-01-2958 - KATHLEEN HUMPHREYS (pickup)",
+        "location": [
+          -104.9744302,
+          39.7463237
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770227100,
+            1770227280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 5,
+        "description": "TR-01-2958 - KATHLEEN HUMPHREYS (dropoff)",
+        "location": [
+          -104.981449,
+          39.74105429999999
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 6,
+        "description": "TR-01-2959 - AMANDA D KNIGHT (pickup)",
+        "location": [
+          -104.9788774,
+          39.743782
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770221100,
+            1770221280
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 6,
+        "description": "TR-01-2959 - AMANDA D KNIGHT (dropoff)",
+        "location": [
+          -104.8945845,
+          39.6949695
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 7,
+        "description": "TR-01-2960 - AMANDA D KNIGHT (pickup)",
+        "location": [
+          -104.8945845,
+          39.6949695
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770228300,
+            1770228480
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 7,
+        "description": "TR-01-2960 - AMANDA D KNIGHT (dropoff)",
+        "location": [
+          -104.9788774,
+          39.743782
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 8,
+        "description": "TR-01-2961 - TIMOTHY STRAH (pickup)",
+        "location": [
+          -104.9421708,
+          39.7393692
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770237900,
+            1770238080
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 8,
+        "description": "TR-01-2961 - TIMOTHY STRAH (dropoff)",
+        "location": [
+          -104.9844938,
+          39.7363756
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "pickup": {
+        "id": 9,
+        "description": "TR-01-2962 - KENDRA MATRICIAN (pickup)",
+        "location": [
+          -104.9892235,
+          39.7444882
+        ],
+        "service": 120,
+        "time_windows": [
+          [
+            1770222300,
+            1770222480
+          ]
+        ]
+      },
+      "delivery": {
+        "id": 9,
+        "description": "TR-01-2962 - KENDRA MATRICIAN (dropoff)",
+        "location": [
+          -104.9356465,
+          39.7349371
+        ],
+        "service": 120
+      },
+      "amount": [
+        1,
+        1,
+        0,
+        0
+      ],
+      "priority": 100
+    }
+  ],
+  "options": {
+    "g": true,
+    "x": 5,
+    "l": 300
+  },
+  "jobs": [
+    {
+      "id": 10000,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10001,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10002,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10003,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10004,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10005,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10006,
+      "description": "Scranton Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.84082,
+        39.735743
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10007,
+      "description": "Scranton Outbound - End (08:50-09:10)",
+      "location": [
+        -104.84082,
+        39.735743
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10008,
+      "description": "Scranton Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10009,
+      "description": "Scranton Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10010,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10011,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10012,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10013,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10014,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10015,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10016,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10017,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10018,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10019,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10020,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10021,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10022,
+      "description": "Liverpool Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10023,
+      "description": "Liverpool Outbound - End (08:50-09:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10024,
+      "description": "Liverpool Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10025,
+      "description": "Liverpool Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10026,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10027,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10028,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10029,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10030,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10031,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10032,
+      "description": "Liverpool Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10033,
+      "description": "Liverpool Outbound - End (08:50-09:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10034,
+      "description": "Liverpool Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10035,
+      "description": "Liverpool Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10036,
+      "description": "IOP Morning Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10037,
+      "description": "IOP Morning Outbound - End (08:35-08:55)",
+      "location": [
+        -104.8592804,
+        39.7170955
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770219300,
+          1770220500
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10038,
+      "description": "IOP Midday Outbound - Start (11:40-12:00)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770230400,
+          1770231600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10039,
+      "description": "IOP Midday Outbound - End (12:35-12:55)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770233700,
+          1770234900
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10040,
+      "description": "Lima Midday Return - Start (15:50-16:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770245400,
+          1770246600
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10041,
+      "description": "Lima Midday Return - End (16:50-17:10)",
+      "location": [
+        -104.8170536,
+        39.7202127
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770249000,
+          1770250200
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10042,
+      "description": "Liverpool Outbound - Start (07:50-08:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770216600,
+          1770217800
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10043,
+      "description": "Liverpool Outbound - End (08:50-09:10)",
+      "location": [
+        -104.7441403,
+        39.6417714
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770220200,
+          1770221400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10044,
+      "description": "Liverpool Return - Start (11:20-11:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770229200,
+          1770230400
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    },
+    {
+      "id": 10045,
+      "description": "Liverpool Return - End (12:20-12:40)",
+      "location": [
+        -104.8396796,
+        39.5939938
+      ],
+      "service": 0,
+      "time_windows": [
+        [
+          1770232800,
+          1770234000
+        ]
+      ],
+      "delivery": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "priority": 100
+    }
+  ],
+  "relations": [
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 15
+        },
+        {
+          "type": "shipment",
+          "id": 16
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 17
+        },
+        {
+          "type": "shipment",
+          "id": 18
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 19
+        },
+        {
+          "type": "shipment",
+          "id": 20
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 21
+        },
+        {
+          "type": "shipment",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 23
+        },
+        {
+          "type": "shipment",
+          "id": 24
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 29
+        },
+        {
+          "type": "shipment",
+          "id": 30
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 31
+        },
+        {
+          "type": "shipment",
+          "id": 32
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 33
+        },
+        {
+          "type": "shipment",
+          "id": 34
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 37
+        },
+        {
+          "type": "shipment",
+          "id": 38
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 39
+        },
+        {
+          "type": "shipment",
+          "id": 40
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 43
+        },
+        {
+          "type": "shipment",
+          "id": 44
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 49
+        },
+        {
+          "type": "shipment",
+          "id": 50
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 51
+        },
+        {
+          "type": "shipment",
+          "id": 52
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 60
+        },
+        {
+          "type": "shipment",
+          "id": 61
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 64
+        },
+        {
+          "type": "shipment",
+          "id": 65
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 68
+        },
+        {
+          "type": "shipment",
+          "id": 69
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 72
+        },
+        {
+          "type": "shipment",
+          "id": 73
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 76
+        },
+        {
+          "type": "shipment",
+          "id": 77
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 79
+        },
+        {
+          "type": "shipment",
+          "id": 80
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 81
+        },
+        {
+          "type": "shipment",
+          "id": 82
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 83
+        },
+        {
+          "type": "shipment",
+          "id": 84
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 85
+        },
+        {
+          "type": "shipment",
+          "id": 86
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 99
+        },
+        {
+          "type": "shipment",
+          "id": 100
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 107
+        },
+        {
+          "type": "shipment",
+          "id": 108
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 109
+        },
+        {
+          "type": "shipment",
+          "id": 110
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 121
+        },
+        {
+          "type": "shipment",
+          "id": 122
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 128
+        },
+        {
+          "type": "shipment",
+          "id": 129
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 130
+        },
+        {
+          "type": "shipment",
+          "id": 131
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 135
+        },
+        {
+          "type": "shipment",
+          "id": 136
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 137
+        },
+        {
+          "type": "shipment",
+          "id": 138
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 139
+        },
+        {
+          "type": "shipment",
+          "id": 140
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 176
+        },
+        {
+          "type": "shipment",
+          "id": 177
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 224
+        },
+        {
+          "type": "shipment",
+          "id": 225
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 232
+        },
+        {
+          "type": "shipment",
+          "id": 233
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 234
+        },
+        {
+          "type": "shipment",
+          "id": 235
+        }
+      ]
+    },
+    {
+      "type": "in_direct_sequence",
+      "steps": [
+        {
+          "type": "shipment",
+          "id": 236
+        },
+        {
+          "type": "shipment",
+          "id": 237
+        }
+      ]
+    }
+  ]
+}

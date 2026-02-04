@@ -1,0 +1,14 @@
+{
+  "vehicles": [{
+    "id": 1,
+    "start": [0, 0],
+    "end": [0, 0],
+    "time_window": [0, 100]
+  }],
+  "jobs": [{
+    "id": 1,
+    "location": [1, 1],
+    "service": 10,
+    "time_windows": [[200, 300]]
+  }]
+}

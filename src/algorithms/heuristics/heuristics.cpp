@@ -9,8 +9,10 @@ All rights reserved (see LICENSE).
 
 #include <algorithm>
 #include <iostream>
+#include <optional>
 
 #include "algorithms/heuristics/heuristics.h"
+#include "utils/exception.h"
 #include "utils/helpers.h"
 
 namespace vroom::heuristics {
@@ -242,11 +244,17 @@ inline void seed_route(const Input& input,
       continue;
     }
 
-    bool is_valid = (vehicle.ok_for_range_bounds(evals[job_rank][v_rank])) &&
-                    route.is_valid_addition_for_capacity(input,
-                                                         current_job.pickup,
-                                                         current_job.delivery,
-                                                         0);
+    bool is_valid = false;
+    try {
+      is_valid = (vehicle.ok_for_range_bounds(evals[job_rank][v_rank])) &&
+                 route.is_valid_addition_for_capacity(input,
+                                                      current_job.pickup,
+                                                      current_job.delivery,
+                                                      0);
+    } catch (const InfeasibleRouteException&) {
+      // Route state issue or capacity infeasible - skip this job
+      is_valid = false;
+    }
     if (is_pickup) {
       std::vector<Index> p_d({job_rank, static_cast<Index>(job_rank + 1)});
       is_valid = is_valid && route.is_valid_addition_for_tw(input,
@@ -292,16 +300,20 @@ inline void seed_route(const Input& input,
   }
 
   if (init_ok) {
-    if (input.jobs[best_job_rank].type == JOB_TYPE::SINGLE) {
-      route.add(input, best_job_rank, 0);
-      unassigned.erase(best_job_rank);
-    }
-    if (input.jobs[best_job_rank].type == JOB_TYPE::PICKUP) {
-      std::vector<Index> p_d(
-        {best_job_rank, static_cast<Index>(best_job_rank + 1)});
-      route.replace(input, input.zero_amount(), p_d.begin(), p_d.end(), 0, 0);
-      unassigned.erase(best_job_rank);
-      unassigned.erase(best_job_rank + 1);
+    try {
+      if (input.jobs[best_job_rank].type == JOB_TYPE::SINGLE) {
+        route.add(input, best_job_rank, 0);
+        unassigned.erase(best_job_rank);
+      }
+      if (input.jobs[best_job_rank].type == JOB_TYPE::PICKUP) {
+        std::vector<Index> p_d(
+          {best_job_rank, static_cast<Index>(best_job_rank + 1)});
+        route.replace(input, input.zero_amount(), p_d.begin(), p_d.end(), 0, 0);
+        unassigned.erase(best_job_rank);
+        unassigned.erase(best_job_rank + 1);
+      }
+    } catch (const std::exception&) {
+      // Job cannot fit (time windows, capacity, or other constraints), leave unassigned
     }
   }
 }
@@ -436,7 +448,6 @@ void assign_relations_to_routes(const Input& input,
     }
 
     // Find a vehicle that can accommodate all shipments
-    bool assigned = false;
     for (auto& route : routes) {
       const auto& vehicle = input.vehicles[route.v_rank];
 
@@ -469,38 +480,61 @@ void assign_relations_to_routes(const Input& input,
 
       // Validate insertion at the end
       Index insert_pos = route.size();
-      if (!route.is_valid_addition_for_tw(input,
-                                          input.zero_amount(),
-                                          shipments_to_add.begin(),
-                                          shipments_to_add.end(),
-                                          insert_pos,
-                                          insert_pos)) {
+      bool can_add = false;
+      try {
+        const Amount delivery_delta = input.zero_amount();
+        can_add =
+          route.is_valid_addition_for_capacity_inclusion(
+            input,
+            delivery_delta,
+            shipments_to_add.begin(),
+            shipments_to_add.end(),
+            insert_pos,
+            insert_pos) &&
+          route.is_valid_addition_for_tw(input,
+                                         delivery_delta,
+                                         shipments_to_add.begin(),
+                                         shipments_to_add.end(),
+                                         insert_pos,
+                                         insert_pos);
+      } catch (const InfeasibleRouteException&) {
+        can_add = false;
+      }
+
+      if (!can_add) {
         continue;  // Can't insert on this vehicle
       }
 
       // Use replace() instead of set_route() to properly handle TWRoute arrays
-      route.replace(input,
-                    input.zero_amount(),
-                    shipments_to_add.begin(),
-                    shipments_to_add.end(),
-                    insert_pos,
-                    insert_pos);
+      std::optional<Route> route_backup = route;
+      try {
+        route.replace(input,
+                      input.zero_amount(),
+                      shipments_to_add.begin(),
+                      shipments_to_add.end(),
+                      insert_pos,
+                      insert_pos);
 
-      // Remove from unassigned
-      for (size_t i = 0; i < relation.pickup_ranks.size(); ++i) {
-        unassigned.erase(relation.pickup_ranks[i]);
-        unassigned.erase(relation.delivery_ranks[i]);
+        // Only remove from unassigned if insertion succeeded
+        for (size_t i = 0; i < relation.pickup_ranks.size(); ++i) {
+          unassigned.erase(relation.pickup_ranks[i]);
+          unassigned.erase(relation.delivery_ranks[i]);
+        }
+
+        break; // Move to next relation
+      } catch (const InfeasibleRouteException&) {
+        // Relation cannot fit due to time window constraints, leave unassigned
+        // Restore route if it was partially modified.
+        route = std::move(*route_backup);
+        continue; // Try next vehicle
       }
-
-      assigned = true;
-      break; // Move to next relation
     }
   }
 }
 
 template <class Route>
 inline Eval fill_route(const Input& input,
-                       std::vector<Route>& all_routes,
+                       [[maybe_unused]] std::vector<Route>& all_routes,
                        Route& route,
                        std::set<Index>& unassigned,
                        const std::vector<Cost>& regrets,
@@ -607,17 +641,22 @@ inline Eval fill_route(const Input& input,
             static_cast<double>(current_eval.cost) -
             lambda * static_cast<double>(regrets[job_rank]);
 
-          if (current_cost < best_cost &&
-              (vehicle.ok_for_range_bounds(route_eval + current_eval)) &&
-              route.is_valid_addition_for_capacity(input,
-                                                   current_job.pickup,
-                                                   current_job.delivery,
-                                                   r) &&
-              route.is_valid_addition_for_tw(input, job_rank, r)) {
-            best_cost = current_cost;
-            best_job_rank = job_rank;
-            best_r = r;
-            best_eval = current_eval;
+          try {
+            if (current_cost < best_cost &&
+                (vehicle.ok_for_range_bounds(route_eval + current_eval)) &&
+                route.is_valid_addition_for_capacity(input,
+                                                     current_job.pickup,
+                                                     current_job.delivery,
+                                                     r) &&
+                route.is_valid_addition_for_tw(input, job_rank, r)) {
+              best_cost = current_cost;
+              best_job_rank = job_rank;
+              best_r = r;
+              best_eval = current_eval;
+            }
+          } catch (const InfeasibleRouteException&) {
+            // Route state issue or infeasible - skip this position
+            continue;
           }
         }
       }
@@ -665,18 +704,16 @@ inline Eval fill_route(const Input& input,
             continue;
           }
 
-          const auto p_add = utils::addition_eval(input,
-                                                  job_rank,
-                                                  vehicle,
-                                                  route.route,
-                                                  pickup_r);
-
-          if (!route.is_valid_addition_for_load(input,
-                                                current_job.pickup,
-                                                pickup_r) ||
-              !route.is_valid_addition_for_tw_without_max_load(input,
-                                                               job_rank,
-                                                               pickup_r)) {
+          try {
+            if (!route.is_valid_addition_for_load(input,
+                                                  current_job.pickup,
+                                                  pickup_r) ||
+                !route.is_valid_addition_for_tw_without_max_load(input,
+                                                                 job_rank,
+                                                                 pickup_r)) {
+              continue;
+            }
+          } catch (const InfeasibleRouteException&) {
             continue;
           }
 
@@ -724,35 +761,39 @@ inline Eval fill_route(const Input& input,
             if (current_cost < best_cost) {
               modified_with_pd.push_back(job_rank + 1);
 
-              // Validate atomic placement
-              const bool valid =
-                (vehicle.ok_for_range_bounds(route_eval + current_eval)) &&
-                route
-                  .is_valid_addition_for_capacity_inclusion(input,
-                                                            input.zero_amount(),
-                                                            modified_with_pd
-                                                              .begin(),
-                                                            modified_with_pd
-                                                              .end(),
-                                                            pickup_r,
-                                                            delivery_r) &&
-                route.is_valid_addition_for_tw(input,
-                                               input.zero_amount(),
-                                               modified_with_pd.begin(),
-                                               modified_with_pd.end(),
-                                               pickup_r,
-                                               delivery_r);
+              try {
+                // Validate atomic placement
+                const bool valid =
+                  (vehicle.ok_for_range_bounds(route_eval + current_eval)) &&
+                  route
+                    .is_valid_addition_for_capacity_inclusion(input,
+                                                              input.zero_amount(),
+                                                              modified_with_pd
+                                                                .begin(),
+                                                              modified_with_pd
+                                                                .end(),
+                                                              pickup_r,
+                                                              delivery_r) &&
+                  route.is_valid_addition_for_tw(input,
+                                                 input.zero_amount(),
+                                                 modified_with_pd.begin(),
+                                                 modified_with_pd.end(),
+                                                 pickup_r,
+                                                 delivery_r);
+
+                if (valid) {
+                  best_cost = current_cost;
+                  best_job_rank = job_rank;
+                  best_pickup_r = pickup_r;
+                  best_delivery_r = delivery_r;
+                  best_modified_delivery = input.zero_amount();
+                  best_eval = current_eval;
+                }
+              } catch (const InfeasibleRouteException&) {
+                // Route state issue or infeasible - skip this placement
+              }
 
               modified_with_pd.pop_back();
-
-              if (valid) {
-                best_cost = current_cost;
-                best_job_rank = job_rank;
-                best_pickup_r = pickup_r;
-                best_delivery_r = delivery_r;
-                best_modified_delivery = input.zero_amount();
-                best_eval = current_eval;
-              }
             }
           }
           // If atomic placement is not valid, this shipment will remain unassigned
@@ -763,30 +804,35 @@ inline Eval fill_route(const Input& input,
 
     if (best_cost < std::numeric_limits<double>::max()) {
       // Relations are pre-assigned, so we only handle regular shipments here
-      {
+      try {
+        bool insertion_ok = false;
+        std::optional<Eval> updated_route_eval;
+
         // Handle single job insertion
         const auto& best_job = input.jobs[best_job_rank];
         if (best_job.type == JOB_TYPE::SINGLE) {
           route.add(input, best_job_rank, best_r);
           unassigned.erase(best_job_rank);
           keep_going = true;
-
-          unassigned_costs.update_max_edge(input, route);
-          unassigned_costs.update_min_costs(input, unassigned, best_job.index());
+          insertion_ok = true;
         }
+
         if (best_job.type == JOB_TYPE::PICKUP) {
-          // Check if this is the first shipment in a relation - if so, verify ALL can be inserted
           bool can_insert = true;
+          bool relation_first = false;
+          const Relation* relation_ptr = nullptr;
+          std::vector<Index> relation_jobs;
           if (input.job_rank_to_relation.contains(best_job_rank)) {
             Index relation_idx = input.job_rank_to_relation.at(best_job_rank);
             Index position = input.job_rank_to_relation_position.at(best_job_rank);
+            const auto& relation = input.relations[relation_idx];
+            relation_ptr = &relation;
 
-            if (position == 0) {
-              // This is the first in a relation - MUST be able to insert ALL shipments
-              const auto& relation = input.relations[relation_idx];
+            if (position == 0 && relation.pickup_ranks.size() > 1) {
+              relation_first = true;
 
-              // Check all subsequent shipments are unassigned
-              for (size_t i = 1; i < relation.pickup_ranks.size(); ++i) {
+              // All shipments in relation must be unassigned.
+              for (size_t i = 0; i < relation.pickup_ranks.size(); ++i) {
                 if (unassigned.find(relation.pickup_ranks[i]) == unassigned.end()) {
                   can_insert = false;
                   break;
@@ -796,24 +842,75 @@ inline Eval fill_route(const Input& input,
               if (can_insert) {
                 // Check if there's enough space in the route for ALL relation shipments
                 size_t total_relation_jobs = 2 * relation.pickup_ranks.size();
-
                 if (route.size() + total_relation_jobs > vehicle.max_tasks) {
-                  // Not enough space for entire relation
                   can_insert = false;
                 }
               }
 
-              // DISABLED: This check was too strict and prevented relations from being inserted
-              // TODO: Need better mechanism to ensure subsequent shipments insert immediately after
-              // if (can_insert && relation.pickup_ranks.size() > 1) {
-              //   if (best_delivery_r != route.size()) {
-              //     can_insert = false;
-              //   }
-              // }
+              if (can_insert) {
+                relation_jobs.reserve(2 * relation.pickup_ranks.size());
+                for (size_t i = 0; i < relation.pickup_ranks.size(); ++i) {
+                  relation_jobs.push_back(relation.pickup_ranks[i]);
+                  relation_jobs.push_back(relation.delivery_ranks[i]);
+                }
+              }
             }
           }
 
-          if (can_insert) {
+          if (can_insert && relation_first && relation_ptr != nullptr) {
+            bool valid = false;
+            try {
+              const Amount delivery_delta = input.zero_amount();
+              Index insert_pos = best_pickup_r;
+
+              valid =
+                route.is_valid_addition_for_capacity_inclusion(
+                  input,
+                  delivery_delta,
+                  relation_jobs.begin(),
+                  relation_jobs.end(),
+                  insert_pos,
+                  insert_pos) &&
+                route.is_valid_addition_for_tw(input,
+                                               delivery_delta,
+                                               relation_jobs.begin(),
+                                               relation_jobs.end(),
+                                               insert_pos,
+                                               insert_pos);
+
+              if (valid) {
+                auto candidate_route = route.route;
+                candidate_route.insert(candidate_route.begin() + insert_pos,
+                                       relation_jobs.begin(),
+                                       relation_jobs.end());
+                Eval new_eval =
+                  utils::route_eval_for_vehicle(input, v_rank, candidate_route);
+                if (vehicle.ok_for_range_bounds(new_eval)) {
+                  route.replace(input,
+                                delivery_delta,
+                                relation_jobs.begin(),
+                                relation_jobs.end(),
+                                insert_pos,
+                                insert_pos);
+                  for (Index job_rank : relation_jobs) {
+                    unassigned.erase(job_rank);
+                  }
+                  keep_going = true;
+                  insertion_ok = true;
+                  updated_route_eval = new_eval;
+                }
+              }
+            } catch (const InfeasibleRouteException&) {
+              valid = false;
+            }
+
+            if (!valid) {
+              // Leave relation unassigned.
+              can_insert = false;
+            }
+          }
+
+          if (can_insert && !relation_first) {
             std::vector<Index> modified_with_pd;
             modified_with_pd.reserve(best_delivery_r - best_pickup_r + 2);
             modified_with_pd.push_back(best_job_rank);
@@ -829,59 +926,34 @@ inline Eval fill_route(const Input& input,
                           modified_with_pd.end(),
                           best_pickup_r,
                           best_delivery_r);
+
             unassigned.erase(best_job_rank);
             unassigned.erase(best_job_rank + 1);
             keep_going = true;
-
-            // If this is the first shipment in a relation, insert ALL remaining shipments immediately
-            if (input.job_rank_to_relation.contains(best_job_rank)) {
-              Index relation_idx = input.job_rank_to_relation.at(best_job_rank);
-              Index position = input.job_rank_to_relation_position.at(best_job_rank);
-              const auto& relation = input.relations[relation_idx];
-
-              if (position == 0 && relation.pickup_ranks.size() > 1) {
-                // This was the first shipment - insert remaining shipments in sequence
-
-                // Build vector with remaining shipments to append
-                std::vector<Index> shipments_to_add;
-                Amount total_additional_delivery = input.zero_amount();
-
-                for (size_t i = 1; i < relation.pickup_ranks.size(); ++i) {
-                  Index next_pickup = relation.pickup_ranks[i];
-                  Index next_delivery = relation.delivery_ranks[i];
-
-                  shipments_to_add.push_back(next_pickup);
-                  shipments_to_add.push_back(next_delivery);
-
-                  unassigned.erase(next_pickup);
-                  unassigned.erase(next_delivery);
-
-                  total_additional_delivery += input.jobs[next_pickup].delivery;
-                }
-
-                // Use replace() to properly handle TWRoute arrays
-                Index append_pos = route.size();
-                route.replace(input,
-                             total_additional_delivery,
-                             shipments_to_add.begin(),
-                             shipments_to_add.end(),
-                             append_pos,
-                             append_pos);
-              }
-            }
+            insertion_ok = true;
           }
-          // If can_insert is false, skip this insertion - leave relation unassigned
 
-          unassigned_costs.update_max_edge(input, route);
-          unassigned_costs.update_min_costs(input, unassigned, best_job.index());
-          unassigned_costs
-            .update_min_costs(input,
-                              unassigned,
-                              input.jobs[best_job_rank + 1].index());
         }
 
-        route_eval += best_eval;
-      } // end else (single job insertion)
+        if (insertion_ok) {
+          unassigned_costs.update_max_edge(input, route);
+          unassigned_costs.update_min_costs(input, unassigned, best_job.index());
+          if (best_job.type == JOB_TYPE::PICKUP) {
+            unassigned_costs
+              .update_min_costs(input,
+                                unassigned,
+                                input.jobs[best_job_rank + 1].index());
+          }
+
+          if (updated_route_eval.has_value()) {
+            route_eval = *updated_route_eval;
+          } else {
+            route_eval += best_eval;
+          }
+        }
+      } catch (const InfeasibleRouteException&) {
+        // Job cannot fit due to time window constraints, leave unassigned
+      }
     }
   }
 
@@ -1286,22 +1358,27 @@ void set_route(const Input& input,
   // Now route is OK with regard to capacity, max_travel_time,
   // max_tasks, precedence and skills constraints.
   if (!job_ranks.empty()) {
-    if (!route.is_valid_addition_for_tw(input,
-                                        single_jobs_deliveries,
-                                        job_ranks.begin(),
-                                        job_ranks.end(),
-                                        0,
-                                        0)) {
-      throw InputException(
-        std::format("Infeasible route for vehicle {}.", vehicle.id));
-    }
+    try {
+      if (!route.is_valid_addition_for_tw(input,
+                                          single_jobs_deliveries,
+                                          job_ranks.begin(),
+                                          job_ranks.end(),
+                                          0,
+                                          0)) {
+        throw InfeasibleRouteException(
+          std::format("Infeasible route for vehicle {}.", vehicle.id));
+      }
 
-    route.replace(input,
-                  single_jobs_deliveries,
-                  job_ranks.begin(),
-                  job_ranks.end(),
-                  0,
-                  0);
+      route.replace(input,
+                    single_jobs_deliveries,
+                    job_ranks.begin(),
+                    job_ranks.end(),
+                    0,
+                    0);
+    } catch (const InfeasibleRouteException&) {
+      // Even hard constraints (vehicle steps) cannot fit, leave jobs unassigned
+      // Jobs remain in unassigned set
+    }
   }
 }
 

@@ -104,12 +104,10 @@ RouteInsertion compute_best_insertion_pd(const Input& input,
   result.eval = cost_threshold;
 
   // Check if pickup is in a relation
-  bool pickup_in_relation = false;
   std::optional<Index> required_prev_delivery = std::nullopt;
 
   auto rel_it = input.job_rank_to_relation.find(j);
   if (rel_it != input.job_rank_to_relation.end()) {
-    pickup_in_relation = true;
     Index relation_idx = rel_it->second;
     Index position = input.job_rank_to_relation_position.at(j);
 
@@ -163,10 +161,14 @@ RouteInsertion compute_best_insertion_pd(const Input& input,
       continue;
     }
 
-    if (!route.is_valid_addition_for_load(input,
-                                          current_job.pickup,
-                                          pickup_r) ||
-        !route.is_valid_addition_for_tw_without_max_load(input, j, pickup_r)) {
+    try {
+      if (!route.is_valid_addition_for_load(input,
+                                            current_job.pickup,
+                                            pickup_r) ||
+          !route.is_valid_addition_for_tw_without_max_load(input, j, pickup_r)) {
+        continue;
+      }
+    } catch (const InfeasibleRouteException&) {
       continue;
     }
 
