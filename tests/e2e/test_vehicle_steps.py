@@ -482,3 +482,65 @@ class TestVehicleStepsEdgeCases:
 
         # Should validate only the job step, not start/end
         assert result.passed or "start" not in str(result).lower()
+
+
+class TestVehicleEndpointsOptional:
+    """Test vehicles can operate without artificial depot endpoints"""
+
+    @pytest.fixture
+    def runner(self):
+        return VroomRunner()
+
+    def test_vehicle_without_start_or_end_uses_first_and_last_job(self, runner):
+        """Vehicles with no endpoints should solve from first task to last task."""
+        input_data = {
+            "vehicles": [{"id": 1, "capacity": [1]}],
+            "jobs": [
+                {
+                    "id": 10,
+                    "location_index": 0,
+                    "service": 0,
+                    "delivery": [0],
+                    "time_windows": [[28800, 28800]],
+                },
+                {
+                    "id": 11,
+                    "location_index": 1,
+                    "service": 0,
+                    "delivery": [0],
+                    "time_windows": [[32400, 32400]],
+                },
+            ],
+            "matrices": {
+                "car": {
+                    "durations": [
+                        [0, 600],
+                        [600, 0],
+                    ],
+                    "distances": [
+                        [0, 1000],
+                        [1000, 0],
+                    ],
+                }
+            },
+        }
+
+        output = runner.run_with_json(input_data)
+
+        assert output["summary"]["unassigned"] == 0
+        assert len(output.get("routes", [])) == 1
+
+        route = output["routes"][0]
+        route_steps = route.get("steps", [])
+
+        assert route_steps[0]["type"] == "start"
+        assert route_steps[0]["location_index"] == 0
+        assert route_steps[-1]["type"] == "end"
+        assert route_steps[-1]["location_index"] == 1
+
+        visited_job_ids = [
+            step["id"]
+            for step in route_steps
+            if step.get("type") == "job"
+        ]
+        assert visited_job_ids == [10, 11]

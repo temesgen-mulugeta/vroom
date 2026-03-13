@@ -53,11 +53,6 @@ Vehicle::Vehicle(Id id,
                                              return b.max_load.has_value();
                                            })),
     type_str(std::move(type_str)) {
-  if (!static_cast<bool>(start) && !static_cast<bool>(end)) {
-    throw InputException(
-      std::format("No start or end specified for vehicle {}.", id));
-  }
-
   for (unsigned i = 0; i < breaks.size(); ++i) {
     const auto& b = breaks[i];
 

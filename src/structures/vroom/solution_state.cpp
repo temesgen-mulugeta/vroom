@@ -284,11 +284,11 @@ void SolutionState::set_node_gains(const RawRoute& raw_route) {
       if (n_index == c_index) {
         task_duration_gain -= _input.jobs[route[1]].setups[vehicle.type];
       }
-    } else {
-      assert(vehicle.has_end());
+      next_eval = vehicle.eval(c_index, n_index);
+    } else if (vehicle.has_end()) {
       n_index = vehicle.end.value().index();
+      next_eval = vehicle.eval(c_index, n_index);
     }
-    next_eval = vehicle.eval(c_index, n_index);
   }
 
   edge_evals_around_node[v][0] = previous_eval + next_eval;
@@ -405,11 +405,11 @@ void SolutionState::set_edge_gains(const RawRoute& raw_route) {
     // no new edge.
     if (route.size() > 2) {
       n_index = _input.jobs[route[2]].index();
-    } else {
-      assert(vehicle.has_end());
+      next_eval = vehicle.eval(after_c_index, n_index);
+    } else if (vehicle.has_end()) {
       n_index = vehicle.end.value().index();
+      next_eval = vehicle.eval(after_c_index, n_index);
     }
-    next_eval = vehicle.eval(after_c_index, n_index);
   }
 
   edge_evals_around_edge[v][0] = previous_eval + next_eval;

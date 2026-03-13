@@ -389,12 +389,17 @@ void Input::add_vehicle(const Vehicle& vehicle) {
   }
 
   // Ensure that location index are either always or never provided.
-  if (_no_addition_yet) {
-    _no_addition_yet = false;
-    _has_custom_location_index = has_location_index;
-  } else {
-    if (_has_custom_location_index != has_location_index) {
-      throw InputException("Missing location index.");
+  // Vehicles without explicit start/end locations carry no signal here,
+  // so defer consistency setup until we see an actual indexed location.
+  const bool vehicle_has_location = current_v.has_start() || current_v.has_end();
+  if (vehicle_has_location) {
+    if (_no_addition_yet) {
+      _no_addition_yet = false;
+      _has_custom_location_index = has_location_index;
+    } else {
+      if (_has_custom_location_index != has_location_index) {
+        throw InputException("Missing location index.");
+      }
     }
   }
 
