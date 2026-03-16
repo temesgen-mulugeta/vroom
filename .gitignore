@@ -5,3 +5,5 @@ lib/
 build/
 .vscode
 .idea
+__pycache__/
+*.pyc
